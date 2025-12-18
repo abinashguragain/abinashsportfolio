@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 
 const navLinks = [
   { href: "/", label: "Home" },
+  { href: "/experience", label: "Experience" },
   { href: "/blog", label: "Blog" },
-  { href: "/contact", label: "Contact" },
 ];
 
 export const Navbar = () => {
@@ -22,7 +22,7 @@ export const Navbar = () => {
             to="/" 
             className="font-display text-2xl md:text-3xl tracking-wide text-foreground hover:text-primary transition-colors"
           >
-            YOUR<span className="text-primary">NAME</span>
+            YOUR<span className="text-accent">NAME</span>
           </Link>
 
           {/* Desktop Navigation */}
