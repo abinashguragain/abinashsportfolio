@@ -1,7 +1,75 @@
-import { Quote } from "lucide-react";
-import { testimonials } from "@/data/testimonials";
+import { useEffect, useState } from "react";
+import { Quote, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+
+interface Testimonial {
+  id: string;
+  name: string;
+  role: string | null;
+  company: string | null;
+  content: string;
+  avatar_url: string | null;
+}
+
+const defaultTestimonials = [
+  {
+    id: "1",
+    name: "Sarah Mitchell",
+    role: "Marketing Director",
+    company: "TechFlow Inc.",
+    content: "Working with this writer transformed our content strategy. Our blog traffic increased by 340% in just six months. The storytelling approach made our technical content accessible and engaging.",
+    avatar_url: null,
+  },
+  {
+    id: "2",
+    name: "James Chen",
+    role: "Founder",
+    company: "StartupLab",
+    content: "Exceptional talent for capturing brand voice. Every piece felt authentic to our company while driving real results. Our conversion rates improved significantly after the website copy overhaul.",
+    avatar_url: null,
+  },
+  {
+    id: "3",
+    name: "Emily Rodriguez",
+    role: "Head of Content",
+    company: "MediaWorks",
+    content: "A rare combination of creative flair and strategic thinking. Deadlines were always met, communication was excellent, and the quality consistently exceeded expectations. Highly recommended.",
+    avatar_url: null,
+  },
+];
 
 export const TestimonialsSection = () => {
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTestimonials = async () => {
+      const { data } = await supabase
+        .from("testimonials")
+        .select("*")
+        .eq("is_active", true)
+        .order("sort_order", { ascending: true });
+
+      if (data && data.length > 0) {
+        setTestimonials(data);
+      } else {
+        setTestimonials(defaultTestimonials);
+      }
+      setLoading(false);
+    };
+    fetchTestimonials();
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="section-padding bg-card">
+        <div className="container-wide flex justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="section-padding bg-card">
       <div className="container-wide">
@@ -35,7 +103,7 @@ export const TestimonialsSection = () => {
                 <div className="pt-4 border-t border-border">
                   <p className="font-semibold text-foreground">{testimonial.name}</p>
                   <p className="text-sm text-muted-foreground">
-                    {testimonial.role}, {testimonial.company}
+                    {testimonial.role}{testimonial.company && `, ${testimonial.company}`}
                   </p>
                 </div>
               </div>
