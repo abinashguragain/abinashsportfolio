@@ -1,22 +1,57 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Calendar, Clock, Search } from "lucide-react";
+import { Calendar, Clock, Search, Loader2 } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { Input } from "@/components/ui/input";
-import { blogPosts, getAllCategories } from "@/data/blogs";
+import { supabase } from "@/integrations/supabase/client";
+
+interface BlogPost {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string | null;
+  read_time: number | null;
+  published_at: string | null;
+  is_featured: boolean | null;
+}
+
+interface Tag {
+  id: string;
+  name: string;
+  slug: string;
+}
 
 const Blog = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  
-  const categories = getAllCategories();
-  
-  const filteredPosts = blogPosts.filter((post) => {
-    const matchesSearch = 
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [tags, setTags] = useState<Tag[]>([]);
+  const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    const [postsRes, tagsRes] = await Promise.all([
+      supabase
+        .from("blog_posts")
+        .select("id, title, slug, excerpt, read_time, published_at, is_featured")
+        .eq("status", "published")
+        .order("published_at", { ascending: false }),
+      supabase.from("blog_tags").select("*").order("name"),
+    ]);
+
+    if (postsRes.data) setPosts(postsRes.data);
+    if (tagsRes.data) setTags(tagsRes.data);
+    setLoading(false);
+  };
+
+  const filteredPosts = posts.filter((post) => {
+    const matchesSearch =
       post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      post.excerpt.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = !selectedCategory || post.category === selectedCategory;
-    return matchesSearch && matchesCategory;
+      (post.excerpt || "").toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesSearch;
   });
 
   return (
@@ -47,33 +82,35 @@ const Blog = () => {
                 className="pl-10"
               />
             </div>
-            
-            {/* Categories */}
-            <div className="flex flex-wrap gap-2">
-              <button
-                onClick={() => setSelectedCategory(null)}
-                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                  !selectedCategory
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-muted-foreground hover:bg-accent"
-                }`}
-              >
-                All
-              </button>
-              {categories.map((category) => (
+
+            {/* Tags */}
+            {tags.length > 0 && (
+              <div className="flex flex-wrap gap-2">
                 <button
-                  key={category}
-                  onClick={() => setSelectedCategory(category)}
+                  onClick={() => setSelectedTag(null)}
                   className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                    selectedCategory === category
+                    !selectedTag
                       ? "bg-primary text-primary-foreground"
                       : "bg-muted text-muted-foreground hover:bg-accent"
                   }`}
                 >
-                  {category}
+                  All
                 </button>
-              ))}
-            </div>
+                {tags.map((tag) => (
+                  <button
+                    key={tag.id}
+                    onClick={() => setSelectedTag(tag.id)}
+                    className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                      selectedTag === tag.id
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted text-muted-foreground hover:bg-accent"
+                    }`}
+                  >
+                    {tag.name}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -81,11 +118,13 @@ const Blog = () => {
       {/* Blog Posts Grid */}
       <section className="section-padding bg-background">
         <div className="container-wide">
-          {filteredPosts.length === 0 ? (
+          {loading ? (
+            <div className="flex justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          ) : filteredPosts.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-muted-foreground text-lg">
-                No posts found matching your criteria.
-              </p>
+              <p className="text-muted-foreground text-lg">No posts found matching your criteria.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
@@ -94,47 +133,44 @@ const Blog = () => {
                   key={post.id}
                   to={`/blog/${post.slug}`}
                   className="group animate-fade-up opacity-0"
-                  style={{ 
+                  style={{
                     animationDelay: `${index * 100}ms`,
-                    animationFillMode: 'forwards'
+                    animationFillMode: "forwards",
                   }}
                 >
                   <article className="h-full p-6 bg-card rounded-xl border border-border card-hover flex flex-col">
-                    {/* Category & Featured Badge */}
+                    {/* Badges */}
                     <div className="flex items-center gap-2 mb-4">
-                      <span className="text-xs font-semibold uppercase tracking-wider text-primary bg-accent px-3 py-1 rounded-full">
-                        {post.category}
-                      </span>
-                      {post.featured && (
-                        <span className="text-xs font-semibold uppercase tracking-wider text-secondary bg-secondary-light px-3 py-1 rounded-full">
+                      {post.is_featured && (
+                        <span className="text-xs font-semibold uppercase tracking-wider text-secondary bg-secondary/10 px-3 py-1 rounded-full">
                           Featured
                         </span>
                       )}
                     </div>
-                    
+
                     {/* Title */}
                     <h2 className="font-display text-xl md:text-2xl text-foreground mb-3 group-hover:text-primary transition-colors">
                       {post.title}
                     </h2>
-                    
+
                     {/* Excerpt */}
-                    <p className="text-muted-foreground text-sm mb-4 flex-1 line-clamp-3">
-                      {post.excerpt}
-                    </p>
-                    
+                    <p className="text-muted-foreground text-sm mb-4 flex-1 line-clamp-3">{post.excerpt}</p>
+
                     {/* Meta */}
                     <div className="flex items-center gap-4 text-xs text-muted-foreground pt-4 border-t border-border">
-                      <span className="flex items-center gap-1">
-                        <Calendar size={14} />
-                        {new Date(post.date).toLocaleDateString('en-US', { 
-                          month: 'short', 
-                          day: 'numeric',
-                          year: 'numeric'
-                        })}
-                      </span>
+                      {post.published_at && (
+                        <span className="flex items-center gap-1">
+                          <Calendar size={14} />
+                          {new Date(post.published_at).toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })}
+                        </span>
+                      )}
                       <span className="flex items-center gap-1">
                         <Clock size={14} />
-                        {post.readTime}
+                        {post.read_time || 5} min read
                       </span>
                     </div>
                   </article>
