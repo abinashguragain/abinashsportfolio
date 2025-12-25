@@ -21,6 +21,7 @@ import TestimonialsEditor from "./pages/admin/TestimonialsEditor";
 import BlogList from "./pages/admin/BlogList";
 import BlogEditor from "./pages/admin/BlogEditor";
 import ContactsList from "./pages/admin/ContactsList";
+import NavigationEditor from "./pages/admin/NavigationEditor";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,7 @@ const App = () => (
             <Route path="/admin/login" element={<AdminAuth />} />
             <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
               <Route index element={<AdminDashboard />} />
+              <Route path="navigation" element={<NavigationEditor />} />
               <Route path="hero" element={<HeroEditor />} />
               <Route path="about" element={<AboutEditor />} />
               <Route path="services" element={<ServicesEditor />} />

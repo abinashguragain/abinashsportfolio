@@ -248,6 +248,60 @@ export type Database = {
         }
         Relationships: []
       }
+      nav_links: {
+        Row: {
+          href: string
+          id: string
+          is_active: boolean | null
+          label: string
+          sort_order: number | null
+          updated_at: string
+        }
+        Insert: {
+          href: string
+          id?: string
+          is_active?: boolean | null
+          label: string
+          sort_order?: number | null
+          updated_at?: string
+        }
+        Update: {
+          href?: string
+          id?: string
+          is_active?: boolean | null
+          label?: string
+          sort_order?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      navigation_settings: {
+        Row: {
+          favicon_url: string | null
+          id: string
+          logo_url: string | null
+          site_name: string
+          site_name_accent: string | null
+          updated_at: string
+        }
+        Insert: {
+          favicon_url?: string | null
+          id?: string
+          logo_url?: string | null
+          site_name?: string
+          site_name_accent?: string | null
+          updated_at?: string
+        }
+        Update: {
+          favicon_url?: string | null
+          id?: string
+          logo_url?: string | null
+          site_name?: string
+          site_name_accent?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
