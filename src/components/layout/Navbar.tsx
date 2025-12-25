@@ -1,17 +1,50 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 
-const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/experience", label: "Experience" },
-  { href: "/blog", label: "Blog" },
-];
+interface NavLink {
+  id: string;
+  label: string;
+  href: string;
+  sort_order: number;
+}
+
+interface NavigationSettings {
+  site_name: string;
+  site_name_accent: string | null;
+  logo_url: string | null;
+}
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [navLinks, setNavLinks] = useState<NavLink[]>([]);
+  const [settings, setSettings] = useState<NavigationSettings>({
+    site_name: "YOUR",
+    site_name_accent: "NAME",
+    logo_url: null,
+  });
   const location = useLocation();
+
+  useEffect(() => {
+    const fetchNavigation = async () => {
+      const [linksResult, settingsResult] = await Promise.all([
+        supabase.from("nav_links").select("*").order("sort_order"),
+        supabase.from("navigation_settings").select("*").single(),
+      ]);
+
+      if (linksResult.data) {
+        setNavLinks(linksResult.data);
+      }
+
+      if (settingsResult.data) {
+        setSettings(settingsResult.data);
+      }
+    };
+
+    fetchNavigation();
+  }, []);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
@@ -22,14 +55,21 @@ export const Navbar = () => {
             to="/" 
             className="font-display text-2xl md:text-3xl tracking-wide text-foreground hover:text-primary transition-colors"
           >
-            YOUR<span className="text-accent">NAME</span>
+            {settings.logo_url ? (
+              <img src={settings.logo_url} alt="Logo" className="h-8 md:h-10" />
+            ) : (
+              <>
+                {settings.site_name}
+                <span className="text-accent">{settings.site_name_accent}</span>
+              </>
+            )}
           </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
               <Link
-                key={link.href}
+                key={link.id}
                 to={link.href}
                 className={`text-sm font-medium transition-colors link-underline ${
                   location.pathname === link.href
@@ -61,7 +101,7 @@ export const Navbar = () => {
             <div className="flex flex-col gap-4">
               {navLinks.map((link) => (
                 <Link
-                  key={link.href}
+                  key={link.id}
                   to={link.href}
                   onClick={() => setIsOpen(false)}
                   className={`text-base font-medium py-2 transition-colors ${

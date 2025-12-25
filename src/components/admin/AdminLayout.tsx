@@ -13,10 +13,12 @@ import {
   X,
   MessageSquare,
   Briefcase,
+  Navigation,
 } from "lucide-react";
 
 const sidebarLinks = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/admin/navigation", label: "Navigation", icon: Navigation },
   { href: "/admin/hero", label: "Hero Section", icon: Image },
   { href: "/admin/about", label: "About", icon: Users },
   { href: "/admin/services", label: "Services", icon: Briefcase },
