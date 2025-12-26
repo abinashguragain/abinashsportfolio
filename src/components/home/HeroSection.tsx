@@ -12,6 +12,8 @@ interface HeroContent {
   image_url: string | null;
   cta_text: string | null;
   cta_link: string | null;
+  badge_title: string | null;
+  badge_subtitle: string | null;
 }
 
 export const HeroSection = () => {
@@ -47,6 +49,8 @@ export const HeroSection = () => {
   const ctaText = content?.cta_text || "Get in Touch";
   const ctaLink = content?.cta_link || "/contact";
   const imageUrl = content?.image_url || avatarImage;
+  const badgeTitle = content?.badge_title || "5+ Years";
+  const badgeSubtitle = content?.badge_subtitle || "Writing Experience";
 
   return (
     <section className="relative section-padding bg-gradient-hero overflow-hidden">
@@ -109,8 +113,8 @@ export const HeroSection = () => {
               
               {/* Floating badge */}
               <div className="absolute -bottom-4 -right-4 bg-card shadow-card rounded-lg px-4 py-2 border border-border animate-float">
-                <p className="text-sm font-semibold text-foreground">5+ Years</p>
-                <p className="text-xs text-muted-foreground">Writing Experience</p>
+                <p className="text-sm font-semibold text-foreground">{badgeTitle}</p>
+                <p className="text-xs text-muted-foreground">{badgeSubtitle}</p>
               </div>
             </div>
           </div>

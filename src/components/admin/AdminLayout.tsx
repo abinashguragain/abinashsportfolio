@@ -14,6 +14,8 @@ import {
   MessageSquare,
   Briefcase,
   Navigation,
+  MousePointerClick,
+  PanelBottom,
 } from "lucide-react";
 
 const sidebarLinks = [
@@ -22,6 +24,8 @@ const sidebarLinks = [
   { href: "/admin/hero", label: "Hero Section", icon: Image },
   { href: "/admin/about", label: "About", icon: Users },
   { href: "/admin/services", label: "Services", icon: Briefcase },
+  { href: "/admin/cta", label: "CTA Section", icon: MousePointerClick },
+  { href: "/admin/footer", label: "Footer", icon: PanelBottom },
   { href: "/admin/testimonials", label: "Testimonials", icon: MessageSquare },
   { href: "/admin/blog", label: "Blog Posts", icon: FileText },
   { href: "/admin/contacts", label: "Messages", icon: MessageSquare },
