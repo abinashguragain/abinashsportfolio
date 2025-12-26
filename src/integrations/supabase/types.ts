@@ -170,6 +170,39 @@ export type Database = {
         }
         Relationships: []
       }
+      cta_content: {
+        Row: {
+          button_link: string | null
+          button_text: string | null
+          description: string | null
+          highlight_word: string | null
+          id: string
+          is_active: boolean | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          button_link?: string | null
+          button_text?: string | null
+          description?: string | null
+          highlight_word?: string | null
+          id?: string
+          is_active?: boolean | null
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          button_link?: string | null
+          button_text?: string | null
+          description?: string | null
+          highlight_word?: string | null
+          id?: string
+          is_active?: boolean | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       experiences: {
         Row: {
           company: string | null
@@ -212,8 +245,61 @@ export type Database = {
         }
         Relationships: []
       }
+      footer_content: {
+        Row: {
+          bottom_tagline: string | null
+          brand_description: string | null
+          copyright_text: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          bottom_tagline?: string | null
+          brand_description?: string | null
+          copyright_text?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          bottom_tagline?: string | null
+          brand_description?: string | null
+          copyright_text?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      footer_links: {
+        Row: {
+          href: string
+          id: string
+          is_active: boolean | null
+          label: string
+          sort_order: number | null
+          updated_at: string
+        }
+        Insert: {
+          href: string
+          id?: string
+          is_active?: boolean | null
+          label: string
+          sort_order?: number | null
+          updated_at?: string
+        }
+        Update: {
+          href?: string
+          id?: string
+          is_active?: boolean | null
+          label?: string
+          sort_order?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       hero_content: {
         Row: {
+          badge_subtitle: string | null
+          badge_title: string | null
           cta_link: string | null
           cta_text: string | null
           description: string | null
@@ -225,6 +311,8 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          badge_subtitle?: string | null
+          badge_title?: string | null
           cta_link?: string | null
           cta_text?: string | null
           description?: string | null
@@ -236,6 +324,8 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          badge_subtitle?: string | null
+          badge_title?: string | null
           cta_link?: string | null
           cta_text?: string | null
           description?: string | null
@@ -377,6 +467,36 @@ export type Database = {
           key?: string
           updated_at?: string
           value?: string | null
+        }
+        Relationships: []
+      }
+      social_links: {
+        Row: {
+          icon: string
+          id: string
+          is_active: boolean | null
+          platform: string
+          sort_order: number | null
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          icon?: string
+          id?: string
+          is_active?: boolean | null
+          platform: string
+          sort_order?: number | null
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          icon?: string
+          id?: string
+          is_active?: boolean | null
+          platform?: string
+          sort_order?: number | null
+          updated_at?: string
+          url?: string
         }
         Relationships: []
       }

@@ -1,8 +1,62 @@
 import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+
+interface CTAContent {
+  title: string;
+  highlight_word: string | null;
+  description: string | null;
+  button_text: string | null;
+  button_link: string | null;
+}
 
 export const CTASection = () => {
+  const [content, setContent] = useState<CTAContent | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCTA = async () => {
+      const { data } = await supabase
+        .from("cta_content")
+        .select("*")
+        .eq("is_active", true)
+        .maybeSingle();
+
+      setContent(data);
+      setLoading(false);
+    };
+    fetchCTA();
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="section-padding bg-gradient-hero relative overflow-hidden min-h-[40vh] flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </section>
+    );
+  }
+
+  const title = content?.title || "LET'S CREATE TOGETHER";
+  const highlightWord = content?.highlight_word || "TOGETHER";
+  const description = content?.description || "Have a project in mind? I'd love to hear about it. Let's discuss how we can bring your content vision to life.";
+  const buttonText = content?.button_text || "Start a Conversation";
+  const buttonLink = content?.button_link || "/contact";
+
+  // Split title by highlight word to render it with gradient
+  const renderTitle = () => {
+    if (highlightWord && title.includes(highlightWord)) {
+      const parts = title.split(highlightWord);
+      return (
+        <>
+          {parts[0]}<span className="text-gradient">{highlightWord}</span>{parts[1] || ""}
+        </>
+      );
+    }
+    return title;
+  };
+
   return (
     <section className="section-padding bg-gradient-hero relative overflow-hidden">
       {/* Decorative elements */}
@@ -11,15 +65,15 @@ export const CTASection = () => {
       
       <div className="container-narrow relative text-center">
         <h2 className="font-display text-3xl md:text-4xl lg:text-5xl text-foreground mb-4">
-          LET'S CREATE <span className="text-gradient">TOGETHER</span>
+          {renderTitle()}
         </h2>
         <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mb-8">
-          Have a project in mind? I'd love to hear about it. Let's discuss how we can bring your content vision to life.
+          {description}
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button variant="hero" size="lg" asChild>
-            <Link to="/contact">
-              Start a Conversation
+            <Link to={buttonLink}>
+              {buttonText}
               <ArrowRight size={20} />
             </Link>
           </Button>

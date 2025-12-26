@@ -5,28 +5,22 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ImageUpload } from "@/components/admin/ImageUpload";
-import { useImageUpload } from "@/hooks/use-image-upload";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 
-interface HeroContent {
+interface CTAContent {
   id: string;
   title: string;
-  subtitle: string | null;
+  highlight_word: string | null;
   description: string | null;
-  cta_text: string | null;
-  cta_link: string | null;
-  image_url: string | null;
-  badge_title: string | null;
-  badge_subtitle: string | null;
+  button_text: string | null;
+  button_link: string | null;
 }
 
-const HeroEditor = () => {
-  const [content, setContent] = useState<HeroContent | null>(null);
+const CTAEditor = () => {
+  const [content, setContent] = useState<CTAContent | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const { uploadImage, uploading } = useImageUpload();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -35,10 +29,10 @@ const HeroEditor = () => {
 
   const fetchContent = async () => {
     const { data, error } = await supabase
-      .from("hero_content")
+      .from("cta_content")
       .select("*")
       .eq("is_active", true)
-      .single();
+      .maybeSingle();
 
     if (data) {
       setContent(data);
@@ -51,16 +45,13 @@ const HeroEditor = () => {
 
     setSaving(true);
     const { error } = await supabase
-      .from("hero_content")
+      .from("cta_content")
       .update({
         title: content.title,
-        subtitle: content.subtitle,
+        highlight_word: content.highlight_word,
         description: content.description,
-        cta_text: content.cta_text,
-        cta_link: content.cta_link,
-        image_url: content.image_url,
-        badge_title: content.badge_title,
-        badge_subtitle: content.badge_subtitle,
+        button_text: content.button_text,
+        button_link: content.button_link,
       })
       .eq("id", content.id);
 
@@ -73,14 +64,10 @@ const HeroEditor = () => {
     } else {
       toast({
         title: "Saved",
-        description: "Hero section updated successfully",
+        description: "CTA section updated successfully",
       });
     }
     setSaving(false);
-  };
-
-  const handleImageUpload = async (file: File) => {
-    return await uploadImage(file, "hero");
   };
 
   if (loading) {
@@ -94,7 +81,7 @@ const HeroEditor = () => {
   if (!content) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground">No hero content found</p>
+        <p className="text-muted-foreground">No CTA content found</p>
       </div>
     );
   }
@@ -103,8 +90,8 @@ const HeroEditor = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-display text-foreground">Hero Section</h1>
-          <p className="text-muted-foreground mt-1">Edit your homepage hero</p>
+          <h1 className="text-3xl font-display text-foreground">CTA Section</h1>
+          <p className="text-muted-foreground mt-1">Edit "Let's Create Together" section</p>
         </div>
         <Button onClick={handleSave} disabled={saving}>
           {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -124,16 +111,21 @@ const HeroEditor = () => {
                 id="title"
                 value={content.title}
                 onChange={(e) => setContent({ ...content, title: e.target.value })}
+                placeholder="e.g., LET'S CREATE TOGETHER"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="subtitle">Subtitle</Label>
+              <Label htmlFor="highlight_word">Highlight Word</Label>
               <Input
-                id="subtitle"
-                value={content.subtitle || ""}
-                onChange={(e) => setContent({ ...content, subtitle: e.target.value })}
+                id="highlight_word"
+                value={content.highlight_word || ""}
+                onChange={(e) => setContent({ ...content, highlight_word: e.target.value })}
+                placeholder="e.g., TOGETHER (will have gradient effect)"
               />
+              <p className="text-xs text-muted-foreground">
+                This word will be highlighted with a gradient effect
+              </p>
             </div>
 
             <div className="space-y-2">
@@ -150,61 +142,25 @@ const HeroEditor = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Call to Action</CardTitle>
+            <CardTitle>Call to Action Button</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="cta_text">Button Text</Label>
+              <Label htmlFor="button_text">Button Text</Label>
               <Input
-                id="cta_text"
-                value={content.cta_text || ""}
-                onChange={(e) => setContent({ ...content, cta_text: e.target.value })}
+                id="button_text"
+                value={content.button_text || ""}
+                onChange={(e) => setContent({ ...content, button_text: e.target.value })}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="cta_link">Button Link</Label>
+              <Label htmlFor="button_link">Button Link</Label>
               <Input
-                id="cta_link"
-                value={content.cta_link || ""}
-                onChange={(e) => setContent({ ...content, cta_link: e.target.value })}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Hero Image</Label>
-              <ImageUpload
-                value={content.image_url || undefined}
-                onChange={(url) => setContent({ ...content, image_url: url })}
-                onUpload={handleImageUpload}
-                uploading={uploading}
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Experience Badge</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="badge_title">Badge Title</Label>
-              <Input
-                id="badge_title"
-                value={content.badge_title || ""}
-                onChange={(e) => setContent({ ...content, badge_title: e.target.value })}
-                placeholder="e.g., 5+ Years"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="badge_subtitle">Badge Subtitle</Label>
-              <Input
-                id="badge_subtitle"
-                value={content.badge_subtitle || ""}
-                onChange={(e) => setContent({ ...content, badge_subtitle: e.target.value })}
-                placeholder="e.g., Writing Experience"
+                id="button_link"
+                value={content.button_link || ""}
+                onChange={(e) => setContent({ ...content, button_link: e.target.value })}
+                placeholder="e.g., /contact"
               />
             </div>
           </CardContent>
@@ -214,4 +170,4 @@ const HeroEditor = () => {
   );
 };
 
-export default HeroEditor;
+export default CTAEditor;

@@ -22,6 +22,8 @@ import BlogList from "./pages/admin/BlogList";
 import BlogEditor from "./pages/admin/BlogEditor";
 import ContactsList from "./pages/admin/ContactsList";
 import NavigationEditor from "./pages/admin/NavigationEditor";
+import CTAEditor from "./pages/admin/CTAEditor";
+import FooterEditor from "./pages/admin/FooterEditor";
 
 const queryClient = new QueryClient();
 
@@ -47,6 +49,8 @@ const App = () => (
               <Route path="hero" element={<HeroEditor />} />
               <Route path="about" element={<AboutEditor />} />
               <Route path="services" element={<ServicesEditor />} />
+              <Route path="cta" element={<CTAEditor />} />
+              <Route path="footer" element={<FooterEditor />} />
               <Route path="testimonials" element={<TestimonialsEditor />} />
               <Route path="blog" element={<BlogList />} />
               <Route path="blog/:id" element={<BlogEditor />} />
