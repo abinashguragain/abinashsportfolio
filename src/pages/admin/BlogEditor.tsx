@@ -9,8 +9,9 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { ImageUpload } from "@/components/admin/ImageUpload";
+import { RichTextEditor } from "@/components/admin/RichTextEditor";
 import { useImageUpload } from "@/hooks/use-image-upload";
-import { Loader2, ArrowLeft, Save, Bold, Italic, Heading1, Heading2, List, Quote } from "lucide-react";
+import { Loader2, ArrowLeft, Save } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 const BlogEditor = () => {
@@ -81,42 +82,6 @@ const BlogEditor = () => {
     }));
   };
 
-  const insertTextFormat = (format: string) => {
-    const textarea = document.getElementById("content") as HTMLTextAreaElement;
-    if (!textarea) return;
-
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selectedText = form.content.substring(start, end);
-
-    let newText = "";
-    switch (format) {
-      case "bold":
-        newText = `**${selectedText || "bold text"}**`;
-        break;
-      case "italic":
-        newText = `*${selectedText || "italic text"}*`;
-        break;
-      case "h1":
-        newText = `\n# ${selectedText || "Heading 1"}\n`;
-        break;
-      case "h2":
-        newText = `\n## ${selectedText || "Heading 2"}\n`;
-        break;
-      case "list":
-        newText = `\n- ${selectedText || "List item"}\n`;
-        break;
-      case "quote":
-        newText = `\n> ${selectedText || "Quote"}\n`;
-        break;
-      default:
-        return;
-    }
-
-    const newContent = form.content.substring(0, start) + newText + form.content.substring(end);
-    setForm((prev) => ({ ...prev, content: newContent }));
-  };
-
   const handleSave = async () => {
     if (!form.title || !form.slug) {
       toast({ title: "Title and slug are required", variant: "destructive" });
@@ -159,8 +124,9 @@ const BlogEditor = () => {
   }
 
   return (
-    <div className="space-y-6 max-w-4xl">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6 max-w-5xl">
+      {/* Header */}
+      <div className="flex items-center justify-between sticky top-0 bg-background/95 backdrop-blur-sm py-4 z-20 border-b border-border -mx-6 px-6">
         <div className="flex items-center gap-4">
           <Button variant="ghost" onClick={() => navigate("/admin/blog")}>
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -168,123 +134,101 @@ const BlogEditor = () => {
           </Button>
           <h1 className="text-2xl font-display">{isNew ? "New Post" : "Edit Post"}</h1>
         </div>
-        <Button onClick={handleSave} disabled={saving}>
-          {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
-          Save
-        </Button>
+        <div className="flex items-center gap-4">
+          <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v })}>
+            <SelectTrigger className="w-32">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="draft">Draft</SelectItem>
+              <SelectItem value="published">Published</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button onClick={handleSave} disabled={saving}>
+            {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
+            Save
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-6">
-        {/* Title */}
-        <div className="space-y-2">
-          <Label htmlFor="title">Title</Label>
+        {/* Title - Large like Google Docs */}
+        <div>
           <Input
             id="title"
             value={form.title}
             onChange={(e) => handleTitleChange(e.target.value)}
-            placeholder="Post title"
+            placeholder="Untitled"
+            className="text-4xl font-display border-0 border-b border-transparent hover:border-border focus:border-primary rounded-none px-0 py-3 h-auto bg-transparent focus-visible:ring-0 transition-colors"
           />
         </div>
 
         {/* Slug */}
-        <div className="space-y-2">
-          <Label htmlFor="slug">Slug</Label>
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <span>URL:</span>
           <Input
             id="slug"
             value={form.slug}
             onChange={(e) => setForm({ ...form, slug: e.target.value })}
             placeholder="post-url-slug"
+            className="w-auto flex-1 h-8 text-sm"
           />
         </div>
 
-        {/* Excerpt */}
-        <div className="space-y-2">
-          <Label htmlFor="excerpt">Excerpt</Label>
-          <Textarea
-            id="excerpt"
-            value={form.excerpt}
-            onChange={(e) => setForm({ ...form, excerpt: e.target.value })}
-            placeholder="Brief summary of the post"
-            rows={2}
-          />
-        </div>
+        {/* Rich Text Editor */}
+        <RichTextEditor
+          content={form.content}
+          onChange={(content) => setForm({ ...form, content })}
+          placeholder="Start writing your blog post..."
+        />
 
-        {/* Featured Image */}
-        <div className="space-y-2">
-          <Label>Featured Image</Label>
-          <ImageUpload
-            value={form.featured_image}
-            onChange={(url) => setForm({ ...form, featured_image: url || "" })}
-            onUpload={(file) => uploadImage(file, "blog")}
-            uploading={uploading}
-          />
-        </div>
+        {/* Sidebar Settings */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6 bg-muted/30 rounded-lg border border-border">
+          <div className="space-y-4">
+            <h3 className="font-semibold">Post Settings</h3>
+            
+            {/* Excerpt */}
+            <div className="space-y-2">
+              <Label htmlFor="excerpt">Excerpt</Label>
+              <Textarea
+                id="excerpt"
+                value={form.excerpt}
+                onChange={(e) => setForm({ ...form, excerpt: e.target.value })}
+                placeholder="Brief summary of the post"
+                rows={3}
+              />
+            </div>
 
-        {/* Rich Text Toolbar */}
-        <div className="space-y-2">
-          <Label htmlFor="content">Content (Markdown)</Label>
-          <div className="flex gap-1 p-2 border border-border rounded-t-md bg-muted/50">
-            <Button type="button" variant="ghost" size="sm" onClick={() => insertTextFormat("bold")}>
-              <Bold className="h-4 w-4" />
-            </Button>
-            <Button type="button" variant="ghost" size="sm" onClick={() => insertTextFormat("italic")}>
-              <Italic className="h-4 w-4" />
-            </Button>
-            <Button type="button" variant="ghost" size="sm" onClick={() => insertTextFormat("h1")}>
-              <Heading1 className="h-4 w-4" />
-            </Button>
-            <Button type="button" variant="ghost" size="sm" onClick={() => insertTextFormat("h2")}>
-              <Heading2 className="h-4 w-4" />
-            </Button>
-            <Button type="button" variant="ghost" size="sm" onClick={() => insertTextFormat("list")}>
-              <List className="h-4 w-4" />
-            </Button>
-            <Button type="button" variant="ghost" size="sm" onClick={() => insertTextFormat("quote")}>
-              <Quote className="h-4 w-4" />
-            </Button>
-          </div>
-          <Textarea
-            id="content"
-            value={form.content}
-            onChange={(e) => setForm({ ...form, content: e.target.value })}
-            placeholder="Write your content in Markdown..."
-            rows={15}
-            className="rounded-t-none font-mono text-sm"
-          />
-        </div>
+            {/* Read Time */}
+            <div className="space-y-2">
+              <Label htmlFor="read_time">Read Time (minutes)</Label>
+              <Input
+                id="read_time"
+                type="number"
+                value={form.read_time}
+                onChange={(e) => setForm({ ...form, read_time: parseInt(e.target.value) || 5 })}
+                min={1}
+              />
+            </div>
 
-        {/* Settings Row */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="space-y-2">
-            <Label>Status</Label>
-            <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v })}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="draft">Draft</SelectItem>
-                <SelectItem value="published">Published</SelectItem>
-              </SelectContent>
-            </Select>
+            {/* Featured Toggle */}
+            <div className="flex items-center gap-2">
+              <Switch
+                checked={form.is_featured}
+                onCheckedChange={(checked) => setForm({ ...form, is_featured: checked })}
+              />
+              <Label>Featured Post</Label>
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="read_time">Read Time (min)</Label>
-            <Input
-              id="read_time"
-              type="number"
-              value={form.read_time}
-              onChange={(e) => setForm({ ...form, read_time: parseInt(e.target.value) || 5 })}
-              min={1}
+          <div className="space-y-4">
+            <h3 className="font-semibold">Featured Image</h3>
+            <ImageUpload
+              value={form.featured_image}
+              onChange={(url) => setForm({ ...form, featured_image: url || "" })}
+              onUpload={(file) => uploadImage(file, "blog")}
+              uploading={uploading}
             />
-          </div>
-
-          <div className="flex items-center gap-2 pt-6">
-            <Switch
-              checked={form.is_featured}
-              onCheckedChange={(checked) => setForm({ ...form, is_featured: checked })}
-            />
-            <Label>Featured Post</Label>
           </div>
         </div>
       </div>
