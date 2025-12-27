@@ -5,11 +5,12 @@ import Placeholder from "@tiptap/extension-placeholder";
 import Underline from "@tiptap/extension-underline";
 import TextAlign from "@tiptap/extension-text-align";
 import Link from "@tiptap/extension-link";
-import { useCallback, useRef, useEffect } from "react";
+import { useCallback, useRef, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useImageUpload } from "@/hooks/use-image-upload";
 import { useToast } from "@/hooks/use-toast";
+import { ImageCropper } from "./ImageCropper";
 import {
   Bold,
   Italic,
@@ -29,6 +30,7 @@ import {
   Undo,
   Redo,
   Loader2,
+  Crop,
 } from "lucide-react";
 
 interface RichTextEditorProps {
@@ -41,6 +43,12 @@ export const RichTextEditor = ({ content, onChange, placeholder = "Start writing
   const { uploadImage, uploading } = useImageUpload();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Cropper state
+  const [cropperOpen, setCropperOpen] = useState(false);
+  const [pendingImage, setPendingImage] = useState<string | null>(null);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [selectedImageSrc, setSelectedImageSrc] = useState<string | null>(null);
 
   const editor = useEditor({
     extensions: [
@@ -53,7 +61,7 @@ export const RichTextEditor = ({ content, onChange, placeholder = "Start writing
         inline: false,
         allowBase64: false,
         HTMLAttributes: {
-          class: "rounded-lg max-w-full mx-auto my-4",
+          class: "rounded-lg max-w-full mx-auto my-4 cursor-pointer",
         },
       }),
       Placeholder.configure({
@@ -75,6 +83,16 @@ export const RichTextEditor = ({ content, onChange, placeholder = "Start writing
       attributes: {
         class: "prose prose-lg dark:prose-invert max-w-none min-h-[500px] p-6 focus:outline-none",
       },
+      handleClick: (view, pos, event) => {
+        const target = event.target as HTMLElement;
+        if (target.tagName === "IMG") {
+          const src = target.getAttribute("src");
+          if (src) {
+            setSelectedImageSrc(src);
+          }
+        }
+        return false;
+      },
     },
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML());
@@ -88,15 +106,74 @@ export const RichTextEditor = ({ content, onChange, placeholder = "Start writing
     }
   }, [content, editor]);
 
-  const handleImageUpload = useCallback(async (file: File) => {
+  const handleImageUpload = useCallback(async (file: File, skipCrop?: boolean) => {
     if (!editor) return;
 
-    const url = await uploadImage(file, "blog");
-    if (url) {
-      editor.chain().focus().setImage({ src: url }).run();
-      toast({ title: "Image added!" });
+    if (skipCrop) {
+      const url = await uploadImage(file, "blog");
+      if (url) {
+        editor.chain().focus().setImage({ src: url }).run();
+        toast({ title: "Image added!" });
+      }
+    } else {
+      // Open cropper
+      const reader = new FileReader();
+      reader.onload = () => {
+        setPendingImage(reader.result as string);
+        setPendingFile(file);
+        setCropperOpen(true);
+      };
+      reader.readAsDataURL(file);
     }
   }, [editor, uploadImage, toast]);
+
+  const handleCropComplete = async (croppedBlob: Blob) => {
+    if (!editor) return;
+    
+    const fileName = pendingFile?.name || "cropped-image.jpg";
+    const croppedFile = new File([croppedBlob], fileName, { type: "image/jpeg" });
+    
+    if (selectedImageSrc) {
+      // Replacing an existing image
+      const url = await uploadImage(croppedFile, "blog");
+      if (url) {
+        // Find and replace the image in the editor
+        const { state } = editor;
+        let imagePos: number | null = null;
+        
+        state.doc.descendants((node, pos) => {
+          if (node.type.name === "image" && node.attrs.src === selectedImageSrc) {
+            imagePos = pos;
+            return false;
+          }
+        });
+        
+        if (imagePos !== null) {
+          editor.chain().focus().setNodeSelection(imagePos).setImage({ src: url }).run();
+        }
+        
+        toast({ title: "Image updated!" });
+      }
+      setSelectedImageSrc(null);
+    } else {
+      // Adding a new image
+      const url = await uploadImage(croppedFile, "blog");
+      if (url) {
+        editor.chain().focus().setImage({ src: url }).run();
+        toast({ title: "Image added!" });
+      }
+    }
+    
+    setPendingImage(null);
+    setPendingFile(null);
+  };
+
+  const handleCropSelectedImage = () => {
+    if (selectedImageSrc) {
+      setPendingImage(selectedImageSrc);
+      setCropperOpen(true);
+    }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -285,6 +362,7 @@ export const RichTextEditor = ({ content, onChange, placeholder = "Start writing
           size="sm"
           onClick={() => fileInputRef.current?.click()}
           disabled={uploading}
+          title="Insert image"
         >
           {uploading ? (
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -292,6 +370,20 @@ export const RichTextEditor = ({ content, onChange, placeholder = "Start writing
             <ImageIcon className="h-4 w-4" />
           )}
         </Button>
+
+        {/* Crop Selected Image */}
+        {selectedImageSrc && (
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            onClick={handleCropSelectedImage}
+            title="Crop selected image"
+          >
+            <Crop className="h-4 w-4" />
+          </Button>
+        )}
+
         <input
           ref={fileInputRef}
           type="file"
@@ -303,6 +395,23 @@ export const RichTextEditor = ({ content, onChange, placeholder = "Start writing
 
       {/* Editor Content */}
       <EditorContent editor={editor} className="bg-background" />
+
+      {/* Image Cropper Dialog */}
+      {pendingImage && (
+        <ImageCropper
+          open={cropperOpen}
+          onOpenChange={(open) => {
+            setCropperOpen(open);
+            if (!open) {
+              setPendingImage(null);
+              setPendingFile(null);
+              setSelectedImageSrc(null);
+            }
+          }}
+          imageSrc={pendingImage}
+          onCropComplete={handleCropComplete}
+        />
+      )}
     </div>
   );
 };
