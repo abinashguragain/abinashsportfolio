@@ -17,6 +17,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import HeroEditor from "./pages/admin/HeroEditor";
 import AboutEditor from "./pages/admin/AboutEditor";
 import ServicesEditor from "./pages/admin/ServicesEditor";
+import ExperienceEditor from "./pages/admin/ExperienceEditor";
 import TestimonialsEditor from "./pages/admin/TestimonialsEditor";
 import BlogList from "./pages/admin/BlogList";
 import BlogEditor from "./pages/admin/BlogEditor";
@@ -48,6 +49,7 @@ const App = () => (
               <Route path="navigation" element={<NavigationEditor />} />
               <Route path="hero" element={<HeroEditor />} />
               <Route path="about" element={<AboutEditor />} />
+              <Route path="experience" element={<ExperienceEditor />} />
               <Route path="services" element={<ServicesEditor />} />
               <Route path="cta" element={<CTAEditor />} />
               <Route path="footer" element={<FooterEditor />} />

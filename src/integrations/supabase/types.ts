@@ -203,11 +203,38 @@ export type Database = {
         }
         Relationships: []
       }
+      experience_page_content: {
+        Row: {
+          highlight_word: string | null
+          id: string
+          subtitle: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          highlight_word?: string | null
+          id?: string
+          subtitle?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          highlight_word?: string | null
+          id?: string
+          subtitle?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       experiences: {
         Row: {
+          accent: string | null
           company: string | null
           description: string | null
           end_date: string | null
+          highlights: string[] | null
+          icon: string | null
           id: string
           is_active: boolean | null
           is_current: boolean | null
@@ -218,9 +245,12 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          accent?: string | null
           company?: string | null
           description?: string | null
           end_date?: string | null
+          highlights?: string[] | null
+          icon?: string | null
           id?: string
           is_active?: boolean | null
           is_current?: boolean | null
@@ -231,9 +261,12 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          accent?: string | null
           company?: string | null
           description?: string | null
           end_date?: string | null
+          highlights?: string[] | null
+          icon?: string | null
           id?: string
           is_active?: boolean | null
           is_current?: boolean | null

@@ -23,6 +23,7 @@ const sidebarLinks = [
   { href: "/admin/navigation", label: "Navigation", icon: Navigation },
   { href: "/admin/hero", label: "Hero Section", icon: Image },
   { href: "/admin/about", label: "About", icon: Users },
+  { href: "/admin/experience", label: "Experience", icon: Briefcase },
   { href: "/admin/services", label: "Services", icon: Briefcase },
   { href: "/admin/cta", label: "CTA Section", icon: MousePointerClick },
   { href: "/admin/footer", label: "Footer", icon: PanelBottom },
