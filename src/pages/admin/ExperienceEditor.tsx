@@ -28,6 +28,12 @@ interface PageContent {
   title: string;
   highlight_word: string | null;
   subtitle: string | null;
+  cta_title: string | null;
+  cta_highlight_word: string | null;
+  cta_description: string | null;
+  cta_button_text: string | null;
+  cta_button_link: string | null;
+  cta_visible: boolean;
 }
 
 const iconOptions = [
@@ -81,6 +87,12 @@ const ExperienceEditor = () => {
         title: pageContent.title,
         highlight_word: pageContent.highlight_word,
         subtitle: pageContent.subtitle,
+        cta_title: pageContent.cta_title,
+        cta_highlight_word: pageContent.cta_highlight_word,
+        cta_description: pageContent.cta_description,
+        cta_button_text: pageContent.cta_button_text,
+        cta_button_link: pageContent.cta_button_link,
+        cta_visible: pageContent.cta_visible,
       })
       .eq("id", pageContent.id);
 
@@ -242,6 +254,87 @@ const ExperienceEditor = () => {
           <Button onClick={handleSavePageContent} disabled={saving}>
             {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Save Header
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* CTA Section */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle>Call to Action Section</CardTitle>
+            <div className="flex items-center gap-2">
+              <Switch
+                checked={pageContent?.cta_visible ?? true}
+                onCheckedChange={(checked) =>
+                  setPageContent((prev) => prev && { ...prev, cta_visible: checked })
+                }
+              />
+              <Label className="text-sm">Visible</Label>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="cta_title">CTA Title</Label>
+              <Input
+                id="cta_title"
+                value={pageContent?.cta_title || ""}
+                onChange={(e) =>
+                  setPageContent((prev) => prev && { ...prev, cta_title: e.target.value })
+                }
+                placeholder="e.g., READY TO COLLABORATE?"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="cta_highlight_word">Highlight Word</Label>
+              <Input
+                id="cta_highlight_word"
+                value={pageContent?.cta_highlight_word || ""}
+                onChange={(e) =>
+                  setPageContent((prev) => prev && { ...prev, cta_highlight_word: e.target.value })
+                }
+                placeholder="Word to highlight in title"
+              />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="cta_description">Description</Label>
+            <Textarea
+              id="cta_description"
+              value={pageContent?.cta_description || ""}
+              onChange={(e) =>
+                setPageContent((prev) => prev && { ...prev, cta_description: e.target.value })
+              }
+              rows={2}
+            />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="cta_button_text">Button Text</Label>
+              <Input
+                id="cta_button_text"
+                value={pageContent?.cta_button_text || ""}
+                onChange={(e) =>
+                  setPageContent((prev) => prev && { ...prev, cta_button_text: e.target.value })
+                }
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="cta_button_link">Button Link</Label>
+              <Input
+                id="cta_button_link"
+                value={pageContent?.cta_button_link || ""}
+                onChange={(e) =>
+                  setPageContent((prev) => prev && { ...prev, cta_button_link: e.target.value })
+                }
+              />
+            </div>
+          </div>
+          <Button onClick={handleSavePageContent} disabled={saving}>
+            {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Save CTA Section
           </Button>
         </CardContent>
       </Card>

@@ -34,6 +34,12 @@ interface PageContent {
   title: string;
   highlight_word: string | null;
   subtitle: string | null;
+  cta_title: string | null;
+  cta_highlight_word: string | null;
+  cta_description: string | null;
+  cta_button_text: string | null;
+  cta_button_link: string | null;
+  cta_visible: boolean;
 }
 
 export default function Experience() {
@@ -80,6 +86,24 @@ export default function Experience() {
       <>
         {parts[0]}
         <span className="text-primary">{highlight_word}</span>
+        {parts[1]}
+      </>
+    );
+  };
+
+  const renderCtaTitle = () => {
+    if (!pageContent?.cta_title) return <>READY TO <span className="text-accent">COLLABORATE</span>?</>;
+    
+    const { cta_title, cta_highlight_word } = pageContent;
+    if (!cta_highlight_word) return cta_title;
+
+    const parts = cta_title.split(cta_highlight_word);
+    if (parts.length === 1) return cta_title;
+
+    return (
+      <>
+        {parts[0]}
+        <span className="text-accent">{cta_highlight_word}</span>
         {parts[1]}
       </>
     );
@@ -229,24 +253,26 @@ export default function Experience() {
       </section>
 
       {/* CTA Section */}
-      <section className="section-padding bg-gradient-metal">
-        <div className="container-narrow text-center">
-          <div className="animate-fade-up">
-            <h2 className="text-3xl md:text-4xl font-display text-foreground mb-4">
-              READY TO <span className="text-accent">COLLABORATE</span>?
-            </h2>
-            <p className="text-muted-foreground text-lg mb-8 max-w-xl mx-auto">
-              Whether you need process optimization, automation solutions, or just want to chat about a project idea.
-            </p>
-            <Button variant="hero" size="lg" asChild>
-              <Link to="/contact" className="group">
-                Let's Talk
-                <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
-              </Link>
-            </Button>
+      {pageContent?.cta_visible !== false && (
+        <section className="section-padding bg-gradient-metal">
+          <div className="container-narrow text-center">
+            <div className="animate-fade-up">
+              <h2 className="text-3xl md:text-4xl font-display text-foreground mb-4">
+                {renderCtaTitle()}
+              </h2>
+              <p className="text-muted-foreground text-lg mb-8 max-w-xl mx-auto">
+                {pageContent?.cta_description || "Whether you need process optimization, automation solutions, or just want to chat about a project idea."}
+              </p>
+              <Button variant="hero" size="lg" asChild>
+                <Link to={pageContent?.cta_button_link || "/contact"} className="group">
+                  {pageContent?.cta_button_text || "Let's Talk"}
+                  <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
+                </Link>
+              </Button>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </Layout>
   );
 }

@@ -205,6 +205,12 @@ export type Database = {
       }
       experience_page_content: {
         Row: {
+          cta_button_link: string | null
+          cta_button_text: string | null
+          cta_description: string | null
+          cta_highlight_word: string | null
+          cta_title: string | null
+          cta_visible: boolean | null
           highlight_word: string | null
           id: string
           subtitle: string | null
@@ -212,6 +218,12 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          cta_button_link?: string | null
+          cta_button_text?: string | null
+          cta_description?: string | null
+          cta_highlight_word?: string | null
+          cta_title?: string | null
+          cta_visible?: boolean | null
           highlight_word?: string | null
           id?: string
           subtitle?: string | null
@@ -219,6 +231,12 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          cta_button_link?: string | null
+          cta_button_text?: string | null
+          cta_description?: string | null
+          cta_highlight_word?: string | null
+          cta_title?: string | null
+          cta_visible?: boolean | null
           highlight_word?: string | null
           id?: string
           subtitle?: string | null
