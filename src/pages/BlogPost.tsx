@@ -1,5 +1,5 @@
 import { useParams, Link, Navigate } from "react-router-dom";
-import { ArrowLeft, Calendar, Clock, Share2, Loader2, Twitter, Facebook, Linkedin, Link2 } from "lucide-react";
+import { Clock, Loader2, Twitter, Facebook, Linkedin, Link2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,7 @@ interface BlogPost {
   content: string | null;
   read_time: number | null;
   published_at: string | null;
+  updated_at: string;
   featured_image: string | null;
 }
 
@@ -122,18 +123,18 @@ const BlogPost = () => {
       {/* Header */}
       <section className="section-padding bg-gradient-hero">
         <div className="container-narrow">
-          <Link
-            to="/blog"
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8"
-          >
-            <ArrowLeft size={16} />
-            Back to Blog
-          </Link>
+          <h1 className="font-display text-3xl md:text-4xl lg:text-5xl text-foreground mb-6">
+            {post.title}
+          </h1>
 
-          <div className="flex flex-wrap items-center gap-4 mb-4">
+          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mb-8">
+            {post.excerpt}
+          </p>
+
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
             {post.published_at && (
-              <span className="flex items-center gap-1 text-sm text-muted-foreground">
-                <Calendar size={14} />
+              <span>
+                <span className="font-medium text-foreground">Published:</span>{" "}
                 {new Date(post.published_at).toLocaleDateString("en-US", {
                   month: "long",
                   day: "numeric",
@@ -141,19 +142,21 @@ const BlogPost = () => {
                 })}
               </span>
             )}
-            <span className="flex items-center gap-1 text-sm text-muted-foreground">
+            {post.updated_at && post.updated_at !== post.published_at && (
+              <span>
+                <span className="font-medium text-foreground">Last updated:</span>{" "}
+                {new Date(post.updated_at).toLocaleDateString("en-US", {
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+              </span>
+            )}
+            <span className="flex items-center gap-1">
               <Clock size={14} />
               {post.read_time || 5} min read
             </span>
           </div>
-
-          <h1 className="font-display text-3xl md:text-4xl lg:text-5xl text-foreground mb-6">
-            {post.title}
-          </h1>
-
-          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl">
-            {post.excerpt}
-          </p>
         </div>
       </section>
 
