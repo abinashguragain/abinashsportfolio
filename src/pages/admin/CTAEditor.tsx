@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 
@@ -15,6 +16,7 @@ interface CTAContent {
   description: string | null;
   button_text: string | null;
   button_link: string | null;
+  is_active: boolean | null;
 }
 
 const CTAEditor = () => {
@@ -31,7 +33,7 @@ const CTAEditor = () => {
     const { data, error } = await supabase
       .from("cta_content")
       .select("*")
-      .eq("is_active", true)
+      .limit(1)
       .maybeSingle();
 
     if (data) {
@@ -52,6 +54,7 @@ const CTAEditor = () => {
         description: content.description,
         button_text: content.button_text,
         button_link: content.button_link,
+        is_active: content.is_active,
       })
       .eq("id", content.id);
 
@@ -98,6 +101,27 @@ const CTAEditor = () => {
           Save Changes
         </Button>
       </div>
+
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>Section Visibility</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between">
+            <div>
+              <Label htmlFor="is_active">Show Section</Label>
+              <p className="text-sm text-muted-foreground">
+                Toggle to show or hide this section on the homepage
+              </p>
+            </div>
+            <Switch
+              id="is_active"
+              checked={content.is_active ?? true}
+              onCheckedChange={(checked) => setContent({ ...content, is_active: checked })}
+            />
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>

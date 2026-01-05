@@ -10,6 +10,7 @@ interface CTAContent {
   description: string | null;
   button_text: string | null;
   button_link: string | null;
+  is_active: boolean | null;
 }
 
 export const CTASection = () => {
@@ -31,11 +32,12 @@ export const CTASection = () => {
   }, []);
 
   if (loading) {
-    return (
-      <section className="section-padding bg-gradient-hero relative overflow-hidden min-h-[40vh] flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </section>
-    );
+    return null;
+  }
+
+  // Hide section if not active
+  if (!content?.is_active) {
+    return null;
   }
 
   const title = content?.title || "LET'S CREATE TOGETHER";
