@@ -104,39 +104,9 @@ const BlogPost = () => {
     }
   };
 
-  // Simple markdown-to-HTML conversion
-  const renderContent = (content: string) => {
-    return content
-      .split("\n")
-      .map((line, index) => {
-        if (line.startsWith("### ")) {
-          return <h3 key={index} className="font-display text-xl text-foreground mt-8 mb-4">{line.replace("### ", "")}</h3>;
-        }
-        if (line.startsWith("## ")) {
-          return <h2 key={index} className="font-display text-2xl text-foreground mt-10 mb-4">{line.replace("## ", "")}</h2>;
-        }
-        if (line.startsWith("# ")) {
-          return <h1 key={index} className="font-display text-3xl text-foreground mt-10 mb-4">{line.replace("# ", "")}</h1>;
-        }
-        if (line.startsWith("> ")) {
-          return <blockquote key={index} className="border-l-4 border-primary pl-4 italic text-muted-foreground my-4">{line.replace("> ", "")}</blockquote>;
-        }
-        if (line.startsWith("- ")) {
-          return <li key={index} className="mb-2 text-muted-foreground">{line.replace("- ", "")}</li>;
-        }
-        if (line.trim()) {
-          const parts = line.split(/\*\*(.+?)\*\*/g);
-          return (
-            <p key={index} className="text-muted-foreground leading-relaxed mb-4">
-              {parts.map((part, i) =>
-                i % 2 === 1 ? <strong key={i} className="text-foreground">{part}</strong> : part
-              )}
-            </p>
-          );
-        }
-        return null;
-      })
-      .filter(Boolean);
+  // Check if content is HTML (from rich text editor) or plain text
+  const isHtmlContent = (content: string) => {
+    return /<[a-z][\s\S]*>/i.test(content);
   };
 
   return (
@@ -196,7 +166,18 @@ const BlogPost = () => {
       <section className="section-padding bg-background">
         <div className="container-narrow">
           <article className="prose-custom">
-            {post.content && renderContent(post.content)}
+            {post.content && (
+              isHtmlContent(post.content) ? (
+                <div 
+                  className="blog-content"
+                  dangerouslySetInnerHTML={{ __html: post.content }} 
+                />
+              ) : (
+                <div className="whitespace-pre-wrap text-muted-foreground leading-relaxed">
+                  {post.content}
+                </div>
+              )
+            )}
           </article>
 
           <div className="mt-12 pt-8 border-t border-border flex items-center justify-between">
