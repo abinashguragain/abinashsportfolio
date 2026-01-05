@@ -121,13 +121,13 @@ const BlogPost = () => {
   return (
     <Layout>
       {/* Header */}
-      <section className="section-padding bg-gradient-hero">
+      <section className="py-8 md:py-12 bg-gradient-hero">
         <div className="container-narrow">
-          <h1 className="font-display text-3xl md:text-4xl lg:text-5xl text-foreground mb-6">
+          <h1 className="font-display text-2xl md:text-3xl lg:text-4xl text-foreground mb-2">
             {post.title}
           </h1>
 
-          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mb-8">
+          <p className="text-base md:text-lg text-muted-foreground max-w-3xl mb-4">
             {post.excerpt}
           </p>
 
