@@ -114,7 +114,7 @@ const BlogEditor = () => {
       status: form.status,
       is_featured: form.is_featured,
       read_time: form.read_time,
-      author_id: form.author_id || null,
+      author_id: form.author_id && form.author_id.length > 0 ? form.author_id : null,
       published_at: form.status === "published" ? new Date().toISOString() : null,
     };
 
