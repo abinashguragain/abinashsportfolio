@@ -6,6 +6,14 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
+interface Author {
+  id: string;
+  name: string;
+  bio: string | null;
+  bio_link: string | null;
+  avatar_url: string | null;
+}
+
 interface BlogPost {
   id: string;
   title: string;
@@ -16,6 +24,8 @@ interface BlogPost {
   published_at: string | null;
   updated_at: string;
   featured_image: string | null;
+  author_id: string | null;
+  authors: Author | null;
 }
 
 interface RelatedPost {
@@ -42,7 +52,7 @@ const BlogPost = () => {
     const fetchPost = async () => {
       const { data, error } = await supabase
         .from("blog_posts")
-        .select("*")
+        .select("*, authors(*)")
         .eq("slug", slug)
         .eq("status", "published")
         .maybeSingle();
@@ -157,6 +167,36 @@ const BlogPost = () => {
               {post.read_time || 5} min read
             </span>
           </div>
+
+          {/* Author */}
+          {post.authors && (
+            <div className="flex items-center gap-4 mt-6 pt-6 border-t border-border">
+              {post.authors.avatar_url && (
+                <img
+                  src={post.authors.avatar_url}
+                  alt={post.authors.name}
+                  className="w-12 h-12 rounded-full object-cover"
+                />
+              )}
+              <div>
+                <p className="font-medium text-foreground">{post.authors.name}</p>
+                {post.authors.bio && (
+                  post.authors.bio_link ? (
+                    <a
+                      href={post.authors.bio_link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      {post.authors.bio}
+                    </a>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">{post.authors.bio}</p>
+                  )
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </section>
 

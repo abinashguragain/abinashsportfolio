@@ -11,6 +11,7 @@ interface BlogPost {
   excerpt: string | null;
   read_time: number | null;
   published_at: string | null;
+  featured_image: string | null;
 }
 
 export const LatestBlogsSection = () => {
@@ -21,7 +22,7 @@ export const LatestBlogsSection = () => {
     const fetchPosts = async () => {
       const { data } = await supabase
         .from("blog_posts")
-        .select("id, title, slug, excerpt, read_time, published_at")
+        .select("id, title, slug, excerpt, read_time, published_at, featured_image")
         .eq("status", "published")
         .order("published_at", { ascending: false })
         .limit(3);
@@ -74,30 +75,42 @@ export const LatestBlogsSection = () => {
               className="group"
               style={{ animationDelay: `${index * 100}ms` }}
             >
-              <article className="h-full p-6 bg-card rounded-xl border border-border card-hover flex flex-col">
-                <h3 className="font-display text-xl md:text-2xl text-foreground mb-3 group-hover:text-primary transition-colors">
-                  {post.title}
-                </h3>
+              <article className="h-full bg-card rounded-xl border border-border card-hover flex flex-col overflow-hidden">
+                {post.featured_image && (
+                  <div className="aspect-video overflow-hidden">
+                    <img
+                      src={post.featured_image}
+                      alt={post.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                )}
                 
-                <p className="text-muted-foreground text-sm mb-4 flex-1">
-                  {post.excerpt}
-                </p>
-                
-                <div className="flex items-center gap-4 text-xs text-muted-foreground pt-4 border-t border-border">
-                  {post.published_at && (
+                <div className="p-6 flex flex-col flex-1">
+                  <h3 className="font-display text-xl md:text-2xl text-foreground mb-3 group-hover:text-primary transition-colors">
+                    {post.title}
+                  </h3>
+                  
+                  <p className="text-muted-foreground text-sm mb-4 flex-1">
+                    {post.excerpt}
+                  </p>
+                  
+                  <div className="flex items-center gap-4 text-xs text-muted-foreground pt-4 border-t border-border">
+                    {post.published_at && (
+                      <span className="flex items-center gap-1">
+                        <Calendar size={14} />
+                        {new Date(post.published_at).toLocaleDateString('en-US', { 
+                          month: 'short', 
+                          day: 'numeric',
+                          year: 'numeric'
+                        })}
+                      </span>
+                    )}
                     <span className="flex items-center gap-1">
-                      <Calendar size={14} />
-                      {new Date(post.published_at).toLocaleDateString('en-US', { 
-                        month: 'short', 
-                        day: 'numeric',
-                        year: 'numeric'
-                      })}
+                      <Clock size={14} />
+                      {post.read_time || 5} min read
                     </span>
-                  )}
-                  <span className="flex items-center gap-1">
-                    <Clock size={14} />
-                    {post.read_time || 5} min read
-                  </span>
+                  </div>
                 </div>
               </article>
             </Link>

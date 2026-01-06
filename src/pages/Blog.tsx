@@ -13,6 +13,7 @@ interface BlogPost {
   read_time: number | null;
   published_at: string | null;
   is_featured: boolean | null;
+  featured_image: string | null;
 }
 
 interface Tag {
@@ -36,7 +37,7 @@ const Blog = () => {
     const [postsRes, tagsRes] = await Promise.all([
       supabase
         .from("blog_posts")
-        .select("id, title, slug, excerpt, read_time, published_at, is_featured")
+        .select("id, title, slug, excerpt, read_time, published_at, is_featured, featured_image")
         .eq("status", "published")
         .order("published_at", { ascending: false }),
       supabase.from("blog_tags").select("*").order("name"),
@@ -56,18 +57,6 @@ const Blog = () => {
 
   return (
     <Layout>
-      {/* Header */}
-      <section className="section-padding bg-gradient-hero">
-        <div className="container-narrow text-center">
-          <h1 className="font-display text-4xl md:text-5xl lg:text-6xl text-foreground mb-4">
-            THE <span className="text-gradient">BLOG</span>
-          </h1>
-          <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto">
-            Thoughts on writing, content strategy, and the creative journey.
-          </p>
-        </div>
-      </section>
-
       {/* Filters */}
       <section className="py-8 bg-background border-b border-border">
         <div className="container-wide">
@@ -138,40 +127,53 @@ const Blog = () => {
                     animationFillMode: "forwards",
                   }}
                 >
-                  <article className="h-full p-6 bg-card rounded-xl border border-border card-hover flex flex-col">
-                    {/* Badges */}
-                    <div className="flex items-center gap-2 mb-4">
+                  <article className="h-full bg-card rounded-xl border border-border card-hover flex flex-col overflow-hidden">
+                    {/* Thumbnail */}
+                    {post.featured_image && (
+                      <div className="aspect-video overflow-hidden">
+                        <img
+                          src={post.featured_image}
+                          alt={post.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                    )}
+                    
+                    <div className="p-6 flex flex-col flex-1">
+                      {/* Badges */}
                       {post.is_featured && (
-                        <span className="text-xs font-semibold uppercase tracking-wider text-secondary bg-secondary/10 px-3 py-1 rounded-full">
-                          Featured
-                        </span>
+                        <div className="mb-3">
+                          <span className="text-xs font-semibold uppercase tracking-wider text-secondary bg-secondary/10 px-3 py-1 rounded-full">
+                            Featured
+                          </span>
+                        </div>
                       )}
-                    </div>
 
-                    {/* Title */}
-                    <h2 className="font-display text-xl md:text-2xl text-foreground mb-3 group-hover:text-primary transition-colors">
-                      {post.title}
-                    </h2>
+                      {/* Title */}
+                      <h2 className="font-display text-xl md:text-2xl text-foreground mb-3 group-hover:text-primary transition-colors">
+                        {post.title}
+                      </h2>
 
-                    {/* Excerpt */}
-                    <p className="text-muted-foreground text-sm mb-4 flex-1 line-clamp-3">{post.excerpt}</p>
+                      {/* Excerpt */}
+                      <p className="text-muted-foreground text-sm mb-4 flex-1 line-clamp-3">{post.excerpt}</p>
 
-                    {/* Meta */}
-                    <div className="flex items-center gap-4 text-xs text-muted-foreground pt-4 border-t border-border">
-                      {post.published_at && (
+                      {/* Meta */}
+                      <div className="flex items-center gap-4 text-xs text-muted-foreground pt-4 border-t border-border">
+                        {post.published_at && (
+                          <span className="flex items-center gap-1">
+                            <Calendar size={14} />
+                            {new Date(post.published_at).toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                            })}
+                          </span>
+                        )}
                         <span className="flex items-center gap-1">
-                          <Calendar size={14} />
-                          {new Date(post.published_at).toLocaleDateString("en-US", {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                          })}
+                          <Clock size={14} />
+                          {post.read_time || 5} min read
                         </span>
-                      )}
-                      <span className="flex items-center gap-1">
-                        <Clock size={14} />
-                        {post.read_time || 5} min read
-                      </span>
+                      </div>
                     </div>
                   </article>
                 </Link>
