@@ -16,6 +16,7 @@ import {
   Navigation,
   MousePointerClick,
   PanelBottom,
+  UserPen,
 } from "lucide-react";
 
 const sidebarLinks = [
@@ -29,6 +30,7 @@ const sidebarLinks = [
   { href: "/admin/footer", label: "Footer", icon: PanelBottom },
   { href: "/admin/testimonials", label: "Testimonials", icon: MessageSquare },
   { href: "/admin/blog", label: "Blog Posts", icon: FileText },
+  { href: "/admin/authors", label: "Authors", icon: UserPen },
   { href: "/admin/contacts", label: "Messages", icon: MessageSquare },
 ];
 

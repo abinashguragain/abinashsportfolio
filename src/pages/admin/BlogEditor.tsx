@@ -12,18 +12,22 @@ import { ImageUpload } from "@/components/admin/ImageUpload";
 import { RichTextEditor } from "@/components/admin/RichTextEditor";
 import { useImageUpload } from "@/hooks/use-image-upload";
 import { Loader2, ArrowLeft, Save } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+
+interface Author {
+  id: string;
+  name: string;
+}
 
 const BlogEditor = () => {
   const { uploadImage, uploading } = useImageUpload();
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { user } = useAuth();
   const isNew = id === "new";
 
   const [loading, setLoading] = useState(!isNew);
   const [saving, setSaving] = useState(false);
+  const [authors, setAuthors] = useState<Author[]>([]);
   const [form, setForm] = useState({
     title: "",
     slug: "",
@@ -33,13 +37,23 @@ const BlogEditor = () => {
     status: "draft",
     is_featured: false,
     read_time: 5,
+    author_id: "",
   });
 
   useEffect(() => {
+    fetchAuthors();
     if (!isNew && id) {
       fetchPost();
     }
   }, [id, isNew]);
+
+  const fetchAuthors = async () => {
+    const { data } = await supabase
+      .from("authors")
+      .select("id, name")
+      .order("name");
+    if (data) setAuthors(data);
+  };
 
   const fetchPost = async () => {
     const { data, error } = await supabase
@@ -63,6 +77,7 @@ const BlogEditor = () => {
       status: data.status || "draft",
       is_featured: data.is_featured || false,
       read_time: data.read_time || 5,
+      author_id: data.author_id || "",
     });
     setLoading(false);
   };
@@ -91,8 +106,15 @@ const BlogEditor = () => {
     setSaving(true);
 
     const postData = {
-      ...form,
-      author_id: user?.id,
+      title: form.title,
+      slug: form.slug,
+      excerpt: form.excerpt,
+      content: form.content,
+      featured_image: form.featured_image,
+      status: form.status,
+      is_featured: form.is_featured,
+      read_time: form.read_time,
+      author_id: form.author_id || null,
       published_at: form.status === "published" ? new Date().toISOString() : null,
     };
 
@@ -218,6 +240,31 @@ const BlogEditor = () => {
                 onCheckedChange={(checked) => setForm({ ...form, is_featured: checked })}
               />
               <Label>Featured Post</Label>
+            </div>
+
+            {/* Author Selection */}
+            <div className="space-y-2">
+              <Label>Author</Label>
+              <Select
+                value={form.author_id}
+                onValueChange={(v) => setForm({ ...form, author_id: v })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select an author" />
+                </SelectTrigger>
+                <SelectContent>
+                  {authors.map((author) => (
+                    <SelectItem key={author.id} value={author.id}>
+                      {author.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {authors.length === 0 && (
+                <p className="text-xs text-muted-foreground">
+                  No authors yet. Add one in the Authors section.
+                </p>
+              )}
             </div>
           </div>
 

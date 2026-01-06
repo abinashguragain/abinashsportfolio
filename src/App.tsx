@@ -21,6 +21,7 @@ import ExperienceEditor from "./pages/admin/ExperienceEditor";
 import TestimonialsEditor from "./pages/admin/TestimonialsEditor";
 import BlogList from "./pages/admin/BlogList";
 import BlogEditor from "./pages/admin/BlogEditor";
+import AuthorsEditor from "./pages/admin/AuthorsEditor";
 import ContactsList from "./pages/admin/ContactsList";
 import NavigationEditor from "./pages/admin/NavigationEditor";
 import CTAEditor from "./pages/admin/CTAEditor";
@@ -56,6 +57,7 @@ const App = () => (
               <Route path="testimonials" element={<TestimonialsEditor />} />
               <Route path="blog" element={<BlogList />} />
               <Route path="blog/:id" element={<BlogEditor />} />
+              <Route path="authors" element={<AuthorsEditor />} />
               <Route path="contacts" element={<ContactsList />} />
             </Route>
             
