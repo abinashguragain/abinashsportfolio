@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import { RichTextEditor } from "@/components/admin/RichTextEditor";
@@ -16,6 +17,17 @@ import { Loader2, ArrowLeft, Save } from "lucide-react";
 interface Author {
   id: string;
   name: string;
+}
+
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+}
+
+interface SelectedCategory {
+  id: string;
+  isPrimary: boolean;
 }
 
 const BlogEditor = () => {
@@ -28,6 +40,8 @@ const BlogEditor = () => {
   const [loading, setLoading] = useState(!isNew);
   const [saving, setSaving] = useState(false);
   const [authors, setAuthors] = useState<Author[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<SelectedCategory[]>([]);
   const [form, setForm] = useState({
     title: "",
     slug: "",
@@ -42,6 +56,7 @@ const BlogEditor = () => {
 
   useEffect(() => {
     fetchAuthors();
+    fetchCategories();
     if (!isNew && id) {
       fetchPost();
     }
@@ -55,30 +70,54 @@ const BlogEditor = () => {
     if (data) setAuthors(data);
   };
 
-  const fetchPost = async () => {
-    const { data, error } = await supabase
-      .from("blog_posts")
-      .select("*")
-      .eq("id", id)
-      .maybeSingle();
+  const fetchCategories = async () => {
+    const { data } = await supabase
+      .from("blog_categories")
+      .select("id, name, slug")
+      .eq("is_active", true)
+      .order("sort_order");
+    if (data) setCategories(data);
+  };
 
-    if (error || !data) {
+  const fetchPost = async () => {
+    const [postRes, categoriesRes] = await Promise.all([
+      supabase
+        .from("blog_posts")
+        .select("*")
+        .eq("id", id)
+        .maybeSingle(),
+      supabase
+        .from("blog_post_categories")
+        .select("category_id, is_primary")
+        .eq("post_id", id!),
+    ]);
+
+    if (postRes.error || !postRes.data) {
       toast({ title: "Post not found", variant: "destructive" });
       navigate("/admin/blog");
       return;
     }
 
     setForm({
-      title: data.title || "",
-      slug: data.slug || "",
-      excerpt: data.excerpt || "",
-      content: data.content || "",
-      featured_image: data.featured_image || "",
-      status: data.status || "draft",
-      is_featured: data.is_featured || false,
-      read_time: data.read_time || 5,
-      author_id: data.author_id || "",
+      title: postRes.data.title || "",
+      slug: postRes.data.slug || "",
+      excerpt: postRes.data.excerpt || "",
+      content: postRes.data.content || "",
+      featured_image: postRes.data.featured_image || "",
+      status: postRes.data.status || "draft",
+      is_featured: postRes.data.is_featured || false,
+      read_time: postRes.data.read_time || 5,
+      author_id: postRes.data.author_id || "",
     });
+
+    if (categoriesRes.data) {
+      setSelectedCategories(
+        categoriesRes.data.map((c) => ({
+          id: c.category_id,
+          isPrimary: c.is_primary || false,
+        }))
+      );
+    }
     setLoading(false);
   };
 
@@ -95,6 +134,24 @@ const BlogEditor = () => {
       title: value,
       slug: prev.slug || generateSlug(value),
     }));
+  };
+
+  const toggleCategory = (categoryId: string) => {
+    setSelectedCategories((prev) => {
+      const exists = prev.find((c) => c.id === categoryId);
+      if (exists) {
+        return prev.filter((c) => c.id !== categoryId);
+      }
+      return [...prev, { id: categoryId, isPrimary: false }];
+    });
+  };
+
+  const togglePrimary = (categoryId: string) => {
+    setSelectedCategories((prev) =>
+      prev.map((c) =>
+        c.id === categoryId ? { ...c, isPrimary: !c.isPrimary } : c
+      )
+    );
   };
 
   const handleSave = async () => {
@@ -118,23 +175,43 @@ const BlogEditor = () => {
       published_at: form.status === "published" ? new Date().toISOString() : null,
     };
 
+    let postId = id;
     let error;
+
     if (isNew) {
-      const result = await supabase.from("blog_posts").insert(postData);
+      const result = await supabase.from("blog_posts").insert(postData).select("id").single();
       error = result.error;
+      if (result.data) postId = result.data.id;
     } else {
       const result = await supabase.from("blog_posts").update(postData).eq("id", id);
       error = result.error;
     }
 
-    setSaving(false);
-
     if (error) {
+      setSaving(false);
       toast({ title: "Error saving", description: error.message, variant: "destructive" });
-    } else {
-      toast({ title: "Saved!" });
-      navigate("/admin/blog");
+      return;
     }
+
+    // Update categories
+    if (postId) {
+      // Delete existing categories
+      await supabase.from("blog_post_categories").delete().eq("post_id", postId);
+
+      // Insert new categories
+      if (selectedCategories.length > 0) {
+        const categoryInserts = selectedCategories.map((c) => ({
+          post_id: postId!,
+          category_id: c.id,
+          is_primary: c.isPrimary,
+        }));
+        await supabase.from("blog_post_categories").insert(categoryInserts);
+      }
+    }
+
+    setSaving(false);
+    toast({ title: "Saved!" });
+    navigate("/admin/blog");
   };
 
   if (loading) {
@@ -244,15 +321,16 @@ const BlogEditor = () => {
 
             {/* Author Selection */}
             <div className="space-y-2">
-              <Label>Author</Label>
+              <Label>Author (optional)</Label>
               <Select
                 value={form.author_id}
-                onValueChange={(v) => setForm({ ...form, author_id: v })}
+                onValueChange={(v) => setForm({ ...form, author_id: v === "none" ? "" : v })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select an author" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="none">No author</SelectItem>
                   {authors.map((author) => (
                     <SelectItem key={author.id} value={author.id}>
                       {author.name}
@@ -260,11 +338,55 @@ const BlogEditor = () => {
                   ))}
                 </SelectContent>
               </Select>
-              {authors.length === 0 && (
-                <p className="text-xs text-muted-foreground">
-                  No authors yet. Add one in the Authors section.
-                </p>
-              )}
+            </div>
+
+            {/* Categories */}
+            <div className="space-y-2">
+              <Label>Categories</Label>
+              <div className="space-y-2 max-h-48 overflow-y-auto border border-border rounded-lg p-3">
+                {categories.length === 0 ? (
+                  <p className="text-xs text-muted-foreground">
+                    No categories yet. Add some in the Categories section.
+                  </p>
+                ) : (
+                  categories.map((category) => {
+                    const selected = selectedCategories.find((c) => c.id === category.id);
+                    return (
+                      <div key={category.id} className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <Checkbox
+                            id={`cat-${category.id}`}
+                            checked={!!selected}
+                            onCheckedChange={() => toggleCategory(category.id)}
+                          />
+                          <label
+                            htmlFor={`cat-${category.id}`}
+                            className="text-sm cursor-pointer"
+                          >
+                            {category.name}
+                          </label>
+                        </div>
+                        {selected && (
+                          <button
+                            type="button"
+                            onClick={() => togglePrimary(category.id)}
+                            className={`text-xs px-2 py-0.5 rounded-full transition-colors ${
+                              selected.isPrimary
+                                ? "bg-primary text-primary-foreground"
+                                : "bg-muted text-muted-foreground hover:bg-muted/80"
+                            }`}
+                          >
+                            {selected.isPrimary ? "Primary" : "Secondary"}
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Check categories to assign. Click Primary/Secondary to toggle.
+              </p>
             </div>
           </div>
 

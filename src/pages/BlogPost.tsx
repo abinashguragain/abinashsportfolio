@@ -1,5 +1,5 @@
 import { useParams, Link, Navigate } from "react-router-dom";
-import { Clock, Loader2, Twitter, Facebook, Linkedin, Link2 } from "lucide-react";
+import { Clock, Loader2, Twitter, Facebook, Linkedin, Link2, Calendar } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,18 @@ interface Author {
   avatar_url: string | null;
 }
 
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+}
+
+interface PostCategory {
+  category_id: string;
+  is_primary: boolean;
+  blog_categories: Category;
+}
+
 interface BlogPost {
   id: string;
   title: string;
@@ -26,6 +38,7 @@ interface BlogPost {
   featured_image: string | null;
   author_id: string | null;
   authors: Author | null;
+  blog_post_categories: PostCategory[];
 }
 
 interface RelatedPost {
@@ -52,7 +65,11 @@ const BlogPost = () => {
     const fetchPost = async () => {
       const { data, error } = await supabase
         .from("blog_posts")
-        .select("*, authors(*)")
+        .select(`
+          *, 
+          authors(*),
+          blog_post_categories(category_id, is_primary, blog_categories(id, name, slug))
+        `)
         .eq("slug", slug)
         .eq("status", "published")
         .maybeSingle();
@@ -63,16 +80,20 @@ const BlogPost = () => {
         return;
       }
 
-      setPost(data);
+      setPost(data as unknown as BlogPost);
 
-      // Fetch related posts
-      const { data: related } = await supabase
+      // Fetch related posts - prioritize posts in same categories
+      const categoryIds = (data as any).blog_post_categories?.map((pc: any) => pc.category_id) || [];
+      
+      let relatedQuery = supabase
         .from("blog_posts")
         .select("id, title, slug, excerpt, read_time, published_at, featured_image")
         .eq("status", "published")
         .neq("id", data.id)
         .order("published_at", { ascending: false })
-        .limit(2);
+        .limit(3);
+
+      const { data: related } = await relatedQuery;
 
       if (related) setRelatedPosts(related);
       setLoading(false);
@@ -133,6 +154,26 @@ const BlogPost = () => {
       {/* Header */}
       <section className="py-8 md:py-12 bg-gradient-hero">
         <div className="container-narrow">
+          {/* Categories */}
+          {post.blog_post_categories && post.blog_post_categories.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-4">
+              {post.blog_post_categories
+                .sort((a, b) => (b.is_primary ? 1 : 0) - (a.is_primary ? 1 : 0))
+                .map((pc) => (
+                  <span
+                    key={pc.category_id}
+                    className={`text-xs font-medium px-3 py-1 rounded-full ${
+                      pc.is_primary
+                        ? "bg-primary/10 text-primary"
+                        : "bg-muted text-muted-foreground"
+                    }`}
+                  >
+                    {pc.blog_categories?.name}
+                  </span>
+                ))}
+            </div>
+          )}
+
           <h1 className="font-display text-2xl md:text-3xl lg:text-4xl text-foreground mb-2">
             {post.title}
           </h1>
@@ -243,18 +284,44 @@ const BlogPost = () => {
         <section className="section-padding bg-card">
           <div className="container-wide">
             <h2 className="font-display text-2xl md:text-3xl text-foreground mb-8">
-              Continue Reading
+              You May Also Like
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {relatedPosts.map((relatedPost) => (
                 <Link key={relatedPost.id} to={`/blog/${relatedPost.slug}`} className="group">
-                  <article className="p-6 bg-background rounded-xl border border-border card-hover">
-                    <h3 className="font-display text-xl text-foreground mt-2 mb-2 group-hover:text-primary transition-colors">
-                      {relatedPost.title}
-                    </h3>
-                    <p className="text-muted-foreground text-sm line-clamp-2">
-                      {relatedPost.excerpt}
-                    </p>
+                  <article className="h-full bg-background rounded-xl border border-border card-hover overflow-hidden flex flex-col">
+                    {relatedPost.featured_image && (
+                      <div className="aspect-video overflow-hidden">
+                        <img
+                          src={relatedPost.featured_image}
+                          alt={relatedPost.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                    )}
+                    <div className="p-5 flex flex-col flex-1">
+                      <h3 className="font-display text-lg text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2">
+                        {relatedPost.title}
+                      </h3>
+                      <p className="text-muted-foreground text-sm line-clamp-2 flex-1">
+                        {relatedPost.excerpt}
+                      </p>
+                      <div className="flex items-center gap-4 text-xs text-muted-foreground mt-4 pt-4 border-t border-border">
+                        {relatedPost.published_at && (
+                          <span className="flex items-center gap-1">
+                            <Calendar size={12} />
+                            {new Date(relatedPost.published_at).toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                            })}
+                          </span>
+                        )}
+                        <span className="flex items-center gap-1">
+                          <Clock size={12} />
+                          {relatedPost.read_time || 5} min
+                        </span>
+                      </div>
+                    </div>
                   </article>
                 </Link>
               ))}

@@ -1,13 +1,34 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Calendar, Clock, Search, Loader2, User } from "lucide-react";
+import { Calendar, Clock, Search, Loader2, User, Filter, ChevronDown } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuCheckboxItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
+} from "@/components/ui/dropdown-menu";
 import { supabase } from "@/integrations/supabase/client";
 
 interface Author {
   id: string;
   name: string;
+}
+
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+}
+
+interface PostCategory {
+  category_id: string;
+  is_primary: boolean;
+  blog_categories: Category;
 }
 
 interface BlogPost {
@@ -20,19 +41,17 @@ interface BlogPost {
   is_featured: boolean | null;
   featured_image: string | null;
   authors: Author | null;
+  blog_post_categories: PostCategory[];
 }
 
-interface Tag {
-  id: string;
-  name: string;
-  slug: string;
-}
+type TimeFilter = "all" | "week" | "month" | "year";
 
 const Blog = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [posts, setPosts] = useState<BlogPost[]>([]);
-  const [tags, setTags] = useState<Tag[]>([]);
-  const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [timeFilter, setTimeFilter] = useState<TimeFilter>("all");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -40,33 +59,83 @@ const Blog = () => {
   }, []);
 
   const fetchData = async () => {
-    const [postsRes, tagsRes] = await Promise.all([
+    const [postsRes, categoriesRes] = await Promise.all([
       supabase
         .from("blog_posts")
-        .select("id, title, slug, excerpt, read_time, published_at, is_featured, featured_image, authors(id, name)")
+        .select(`
+          id, title, slug, excerpt, read_time, published_at, is_featured, featured_image, 
+          authors(id, name),
+          blog_post_categories(category_id, is_primary, blog_categories(id, name, slug))
+        `)
         .eq("status", "published")
         .order("published_at", { ascending: false }),
-      supabase.from("blog_tags").select("*").order("name"),
+      supabase.from("blog_categories").select("*").eq("is_active", true).order("sort_order"),
     ]);
 
-    if (postsRes.data) setPosts(postsRes.data);
-    if (tagsRes.data) setTags(tagsRes.data);
+    if (postsRes.data) setPosts(postsRes.data as unknown as BlogPost[]);
+    if (categoriesRes.data) setCategories(categoriesRes.data);
     setLoading(false);
   };
 
+  const getTimeFilterDate = (filter: TimeFilter): Date | null => {
+    const now = new Date();
+    switch (filter) {
+      case "week":
+        return new Date(now.setDate(now.getDate() - 7));
+      case "month":
+        return new Date(now.setMonth(now.getMonth() - 1));
+      case "year":
+        return new Date(now.setFullYear(now.getFullYear() - 1));
+      default:
+        return null;
+    }
+  };
+
   const filteredPosts = posts.filter((post) => {
+    // Search filter
     const matchesSearch =
       post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (post.excerpt || "").toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesSearch;
+
+    // Time filter
+    const filterDate = getTimeFilterDate(timeFilter);
+    const matchesTime =
+      !filterDate || (post.published_at && new Date(post.published_at) >= filterDate);
+
+    // Category filter
+    const matchesCategory =
+      selectedCategories.length === 0 ||
+      post.blog_post_categories?.some((pc) =>
+        selectedCategories.includes(pc.category_id)
+      );
+
+    return matchesSearch && matchesTime && matchesCategory;
   });
+
+  const toggleCategory = (categoryId: string) => {
+    setSelectedCategories((prev) =>
+      prev.includes(categoryId)
+        ? prev.filter((id) => id !== categoryId)
+        : [...prev, categoryId]
+    );
+  };
+
+  const timeFilterLabels: Record<TimeFilter, string> = {
+    all: "All Time",
+    week: "Past Week",
+    month: "Past Month",
+    year: "Past Year",
+  };
+
+  const activeFiltersCount =
+    selectedCategories.length + (timeFilter !== "all" ? 1 : 0);
 
   return (
     <Layout>
       {/* Filters */}
-      <section className="py-8 bg-background border-b border-border">
+      <section className="py-4 bg-background">
         <div className="container-wide">
-          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+          <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
             {/* Search */}
             <div className="relative w-full sm:w-80">
               <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
@@ -78,40 +147,96 @@ const Blog = () => {
               />
             </div>
 
-            {/* Tags */}
-            {tags.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                <button
-                  onClick={() => setSelectedTag(null)}
-                  className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                    !selectedTag
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted text-muted-foreground hover:bg-accent"
-                  }`}
+            {/* Filter Dropdowns */}
+            <div className="flex items-center gap-2">
+              {/* Time Filter */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" className="gap-2">
+                    <Calendar size={14} />
+                    {timeFilterLabels[timeFilter]}
+                    <ChevronDown size={14} />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>Time Period</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  {(Object.keys(timeFilterLabels) as TimeFilter[]).map((key) => (
+                    <DropdownMenuCheckboxItem
+                      key={key}
+                      checked={timeFilter === key}
+                      onCheckedChange={() => setTimeFilter(key)}
+                    >
+                      {timeFilterLabels[key]}
+                    </DropdownMenuCheckboxItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Category Filter */}
+              {categories.length > 0 && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm" className="gap-2">
+                      <Filter size={14} />
+                      Categories
+                      {selectedCategories.length > 0 && (
+                        <span className="ml-1 px-1.5 py-0.5 text-xs bg-primary text-primary-foreground rounded-full">
+                          {selectedCategories.length}
+                        </span>
+                      )}
+                      <ChevronDown size={14} />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuLabel>Categories</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    {categories.map((category) => (
+                      <DropdownMenuCheckboxItem
+                        key={category.id}
+                        checked={selectedCategories.includes(category.id)}
+                        onCheckedChange={() => toggleCategory(category.id)}
+                      >
+                        {category.name}
+                      </DropdownMenuCheckboxItem>
+                    ))}
+                    {selectedCategories.length > 0 && (
+                      <>
+                        <DropdownMenuSeparator />
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="w-full justify-start text-muted-foreground"
+                          onClick={() => setSelectedCategories([])}
+                        >
+                          Clear all
+                        </Button>
+                      </>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+
+              {/* Clear All Filters */}
+              {activeFiltersCount > 0 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setSelectedCategories([]);
+                    setTimeFilter("all");
+                  }}
                 >
-                  All
-                </button>
-                {tags.map((tag) => (
-                  <button
-                    key={tag.id}
-                    onClick={() => setSelectedTag(tag.id)}
-                    className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                      selectedTag === tag.id
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted text-muted-foreground hover:bg-accent"
-                    }`}
-                  >
-                    {tag.name}
-                  </button>
-                ))}
-              </div>
-            )}
+                  Clear filters
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </section>
 
       {/* Blog Posts Grid */}
-      <section className="section-padding bg-background">
+      <section className="py-8 bg-background">
         <div className="container-wide">
           {loading ? (
             <div className="flex justify-center py-12">
@@ -146,7 +271,28 @@ const Blog = () => {
                     )}
                     
                     <div className="p-6 flex flex-col flex-1">
-                      {/* Badges */}
+                      {/* Categories */}
+                      {post.blog_post_categories && post.blog_post_categories.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 mb-3">
+                          {post.blog_post_categories
+                            .sort((a, b) => (b.is_primary ? 1 : 0) - (a.is_primary ? 1 : 0))
+                            .slice(0, 3)
+                            .map((pc) => (
+                              <span
+                                key={pc.category_id}
+                                className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${
+                                  pc.is_primary
+                                    ? "bg-primary/10 text-primary"
+                                    : "bg-muted text-muted-foreground"
+                                }`}
+                              >
+                                {pc.blog_categories?.name}
+                              </span>
+                            ))}
+                        </div>
+                      )}
+
+                      {/* Featured Badge */}
                       {post.is_featured && (
                         <div className="mb-3">
                           <span className="text-xs font-semibold uppercase tracking-wider text-secondary bg-secondary/10 px-3 py-1 rounded-full">
