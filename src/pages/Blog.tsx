@@ -1,9 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Calendar, Clock, Search, Loader2 } from "lucide-react";
+import { Calendar, Clock, Search, Loader2, User } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
+
+interface Author {
+  id: string;
+  name: string;
+}
 
 interface BlogPost {
   id: string;
@@ -14,6 +19,7 @@ interface BlogPost {
   published_at: string | null;
   is_featured: boolean | null;
   featured_image: string | null;
+  authors: Author | null;
 }
 
 interface Tag {
@@ -37,7 +43,7 @@ const Blog = () => {
     const [postsRes, tagsRes] = await Promise.all([
       supabase
         .from("blog_posts")
-        .select("id, title, slug, excerpt, read_time, published_at, is_featured, featured_image")
+        .select("id, title, slug, excerpt, read_time, published_at, is_featured, featured_image, authors(id, name)")
         .eq("status", "published")
         .order("published_at", { ascending: false }),
       supabase.from("blog_tags").select("*").order("name"),
@@ -158,7 +164,13 @@ const Blog = () => {
                       <p className="text-muted-foreground text-sm mb-4 flex-1 line-clamp-3">{post.excerpt}</p>
 
                       {/* Meta */}
-                      <div className="flex items-center gap-4 text-xs text-muted-foreground pt-4 border-t border-border">
+                      <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground pt-4 border-t border-border">
+                        {post.authors && (
+                          <span className="flex items-center gap-1">
+                            <User size={14} />
+                            {post.authors.name}
+                          </span>
+                        )}
                         {post.published_at && (
                           <span className="flex items-center gap-1">
                             <Calendar size={14} />
