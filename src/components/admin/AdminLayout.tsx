@@ -46,10 +46,10 @@ const AdminLayout = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background font-admin-sans">
       {/* Mobile Header */}
       <header className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-card border-b border-border z-50 flex items-center justify-between px-4">
-        <span className="font-display text-xl">Admin</span>
+        <span className="font-admin-display text-xl font-semibold">Admin</span>
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
           className="p-2 text-foreground"
@@ -67,7 +67,7 @@ const AdminLayout = () => {
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className="h-16 flex items-center px-6 border-b border-border">
-            <Link to="/" className="font-display text-xl text-foreground">
+            <Link to="/" className="font-admin-display text-xl font-semibold text-foreground">
               Admin Panel
             </Link>
           </div>

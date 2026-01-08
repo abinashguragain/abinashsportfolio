@@ -14,8 +14,10 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Lato', 'system-ui', 'sans-serif'],
-        display: ['Lustria', 'Georgia', 'serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['Bebas Neue', 'Impact', 'sans-serif'],
+        'admin-display': ['Nunito', 'system-ui', 'sans-serif'],
+        'admin-sans': ['PT Sans', 'system-ui', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
