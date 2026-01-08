@@ -99,12 +99,16 @@ export const HeroSection = () => {
           {/* Avatar */}
           <div className="order-1 lg:order-2 flex justify-center lg:justify-end animate-fade-up opacity-0" style={{ animationDelay: '200ms', animationFillMode: 'forwards' }}>
             <div className="relative">
-              {/* Image container - no background for transparent PNG support */}
-              <div className="relative">
+              {/* Decorative borders */}
+              <div className="absolute -inset-4 border-2 border-primary/20 rounded-full" />
+              <div className="absolute -inset-8 border border-secondary/10 rounded-full" />
+              
+              {/* Image container */}
+              <div className="relative w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 rounded-full overflow-hidden border-4 border-primary/30">
                 <img
                   src={imageUrl}
                   alt="Content Writer - Professional Avatar"
-                  className="w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 object-contain"
+                  className="w-full h-full object-contain"
                 />
               </div>
               
