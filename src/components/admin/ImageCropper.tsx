@@ -77,7 +77,7 @@ export const ImageCropper = ({
     }
   };
 
-  const getCroppedImg = async (): Promise<Blob | null> => {
+  const getCroppedImg = async (mimeType: string = "image/png"): Promise<Blob | null> => {
     const image = imgRef.current;
     if (!image || !completedCrop) return null;
 
@@ -91,6 +91,9 @@ export const ImageCropper = ({
     canvas.width = completedCrop.width * scaleX;
     canvas.height = completedCrop.height * scaleY;
 
+    // Clear canvas for transparency support
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
     ctx.drawImage(
       image,
       completedCrop.x * scaleX,
@@ -103,11 +106,12 @@ export const ImageCropper = ({
       canvas.height
     );
 
+    // Use PNG to preserve transparency
     return new Promise((resolve) => {
       canvas.toBlob(
         (blob) => resolve(blob),
-        "image/jpeg",
-        0.95
+        "image/png",
+        1.0
       );
     });
   };
