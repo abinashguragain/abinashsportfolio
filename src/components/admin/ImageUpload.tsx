@@ -54,12 +54,9 @@ export const ImageUpload = ({
   };
 
   const handleCropComplete = async (croppedBlob: Blob) => {
-    // Convert blob to file for upload, preserve PNG for transparency
-    const originalName = pendingFile?.name || "cropped-image.png";
-    const extension = originalName.split('.').pop()?.toLowerCase();
-    const isPng = extension === 'png' || croppedBlob.type === 'image/png';
-    const fileName = isPng ? originalName.replace(/\.[^.]+$/, '.png') : originalName;
-    const croppedFile = new File([croppedBlob], fileName, { type: croppedBlob.type || "image/png" });
+    // Convert blob to file for upload
+    const fileName = pendingFile?.name || "cropped-image.jpg";
+    const croppedFile = new File([croppedBlob], fileName, { type: "image/jpeg" });
     
     const url = await onUpload(croppedFile);
     if (url) {
@@ -96,7 +93,7 @@ export const ImageUpload = ({
           <img
             src={value}
             alt="Uploaded"
-            className="w-full h-48 object-contain rounded-lg border border-border bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHJlY3Qgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiBmaWxsPSIjZjBmMGYwIi8+PHJlY3QgeD0iMTAiIHk9IjEwIiB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIGZpbGw9IiNmMGYwZjAiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')]"
+            className="w-full h-48 object-cover rounded-lg border border-border"
           />
           <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
             {enableCrop && (
