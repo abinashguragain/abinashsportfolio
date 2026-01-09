@@ -61,7 +61,7 @@ export const HeroSection = () => {
       <div className="container-wide relative">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Content */}
-          <div className="order-2 lg:order-1 space-y-6 md:space-y-8">
+          <div className="order-2 lg:order-1 space-y-6 md:space-y-8 text-center lg:text-left">
             <div className="space-y-4">
               <p className="text-sm md:text-base font-semibold text-secondary uppercase tracking-wider animate-fade-up opacity-0" style={{ animationDelay: '100ms', animationFillMode: 'forwards' }}>
                 {subtitle}
@@ -79,18 +79,18 @@ export const HeroSection = () => {
               </h1>
             </div>
             
-            <p className="text-lg md:text-xl text-muted-foreground max-w-lg animate-fade-up opacity-0" style={{ animationDelay: '300ms', animationFillMode: 'forwards' }}>
+            <p className="text-lg md:text-xl text-muted-foreground max-w-lg mx-auto lg:mx-0 animate-fade-up opacity-0" style={{ animationDelay: '300ms', animationFillMode: 'forwards' }}>
               {description}
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4 animate-fade-up opacity-0" style={{ animationDelay: '400ms', animationFillMode: 'forwards' }}>
-              <Button variant="hero" size="lg" asChild>
+            <div className="flex flex-row justify-center lg:justify-start gap-3 animate-fade-up opacity-0" style={{ animationDelay: '400ms', animationFillMode: 'forwards' }}>
+              <Button variant="hero" size="sm" asChild>
                 <Link to={ctaLink}>
                   {ctaText}
-                  <ArrowRight size={20} />
+                  <ArrowRight size={16} />
                 </Link>
               </Button>
-              <Button variant="heroOutline" size="lg" asChild>
+              <Button variant="heroOutline" size="sm" asChild>
                 <Link to="/blog">Read My Blog</Link>
               </Button>
             </div>
