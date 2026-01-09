@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/admin/ProtectedRoute";
+import ThirdPartyScripts from "./components/ThirdPartyScripts";
 import Index from "./pages/Index";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
@@ -27,6 +28,7 @@ import NavigationEditor from "./pages/admin/NavigationEditor";
 import CTAEditor from "./pages/admin/CTAEditor";
 import FooterEditor from "./pages/admin/FooterEditor";
 import CategoriesEditor from "./pages/admin/CategoriesEditor";
+import IntegrationsEditor from "./pages/admin/IntegrationsEditor";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +39,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <ThirdPartyScripts />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/experience" element={<Experience />} />
@@ -61,6 +64,7 @@ const App = () => (
               <Route path="categories" element={<CategoriesEditor />} />
               <Route path="authors" element={<AuthorsEditor />} />
               <Route path="contacts" element={<ContactsList />} />
+              <Route path="integrations" element={<IntegrationsEditor />} />
             </Route>
             
             <Route path="*" element={<NotFound />} />

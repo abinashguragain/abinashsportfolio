@@ -18,6 +18,7 @@ import {
   PanelBottom,
   UserPen,
   FolderOpen,
+  BarChart3,
 } from "lucide-react";
 
 const sidebarLinks = [
@@ -34,6 +35,7 @@ const sidebarLinks = [
   { href: "/admin/categories", label: "Categories", icon: FolderOpen },
   { href: "/admin/authors", label: "Authors", icon: UserPen },
   { href: "/admin/contacts", label: "Messages", icon: MessageSquare },
+  { href: "/admin/integrations", label: "Analytics & SEO", icon: BarChart3 },
 ];
 
 const AdminLayout = () => {

@@ -700,6 +700,30 @@ export type Database = {
         }
         Relationships: []
       }
+      third_party_integrations: {
+        Row: {
+          id: string
+          is_active: boolean | null
+          key: string
+          updated_at: string
+          value: string | null
+        }
+        Insert: {
+          id?: string
+          is_active?: boolean | null
+          key: string
+          updated_at?: string
+          value?: string | null
+        }
+        Update: {
+          id?: string
+          is_active?: boolean | null
+          key?: string
+          updated_at?: string
+          value?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
