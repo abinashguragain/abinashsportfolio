@@ -20,11 +20,8 @@ interface NavigationSettings {
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [navLinks, setNavLinks] = useState<NavLink[]>([]);
-  const [settings, setSettings] = useState<NavigationSettings>({
-    site_name: "YOUR",
-    site_name_accent: "NAME",
-    logo_url: null,
-  });
+  const [settings, setSettings] = useState<NavigationSettings | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const location = useLocation();
 
   useEffect(() => {
@@ -41,6 +38,7 @@ export const Navbar = () => {
       if (settingsResult.data) {
         setSettings(settingsResult.data);
       }
+      setIsLoading(false);
     };
 
     fetchNavigation();
@@ -53,14 +51,16 @@ export const Navbar = () => {
           {/* Logo */}
           <Link 
             to="/" 
-            className="font-display text-2xl md:text-3xl tracking-wide text-foreground hover:text-primary transition-colors"
+            className="font-display text-2xl md:text-3xl tracking-wide text-foreground hover:text-primary transition-colors min-h-[2rem] md:min-h-[2.5rem] flex items-center"
           >
-            {settings.logo_url ? (
+            {isLoading ? (
+              <span className="h-8 md:h-10 w-24 bg-muted/50 animate-pulse rounded" />
+            ) : settings?.logo_url ? (
               <img src={settings.logo_url} alt="Logo" className="h-8 md:h-10" />
             ) : (
               <>
-                {settings.site_name}
-                <span className="text-accent">{settings.site_name_accent}</span>
+                {settings?.site_name || ""}
+                <span className="text-accent">{settings?.site_name_accent || ""}</span>
               </>
             )}
           </Link>
