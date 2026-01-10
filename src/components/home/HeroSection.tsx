@@ -3,6 +3,7 @@ import { ArrowRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAnalytics } from "@/hooks/use-analytics";
 import avatarImage from "@/assets/avatar.png";
 
 interface HeroContent {
@@ -19,6 +20,7 @@ interface HeroContent {
 export const HeroSection = () => {
   const [content, setContent] = useState<HeroContent | null>(null);
   const [loading, setLoading] = useState(true);
+  const { trackCtaClick } = useAnalytics();
 
   useEffect(() => {
     const fetchHero = async () => {
@@ -84,13 +86,13 @@ export const HeroSection = () => {
             </p>
             
             <div className="flex flex-row justify-center lg:justify-start gap-3 animate-fade-up opacity-0" style={{ animationDelay: '400ms', animationFillMode: 'forwards' }}>
-              <Button variant="hero" size="sm" asChild>
+              <Button variant="hero" size="sm" asChild onClick={() => trackCtaClick("hero_cta", ctaLink)}>
                 <Link to={ctaLink}>
                   {ctaText}
                   <ArrowRight size={16} />
                 </Link>
               </Button>
-              <Button variant="heroOutline" size="sm" asChild>
+              <Button variant="heroOutline" size="sm" asChild onClick={() => trackCtaClick("hero_blog", "/blog")}>
                 <Link to="/blog">Read My Blog</Link>
               </Button>
             </div>

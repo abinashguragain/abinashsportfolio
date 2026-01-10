@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
 import dynamicIconImports from "lucide-react/dynamicIconImports";
 import type { LucideProps } from "lucide-react";
+import { useAnalytics } from "@/hooks/use-analytics";
 
 interface FooterContent {
   brand_description: string | null;
@@ -63,6 +64,7 @@ export const Footer = () => {
   const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
   const [navSettings, setNavSettings] = useState<NavSettings | null>(null);
   const [loading, setLoading] = useState(true);
+  const { trackSocialClick } = useAnalytics();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -143,6 +145,7 @@ export const Footer = () => {
                   rel="noopener noreferrer"
                   className="p-2 rounded-lg bg-muted text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-all duration-300"
                   aria-label={social.platform}
+                  onClick={() => trackSocialClick(social.platform, social.url)}
                 >
                   <Icon name={social.icon} size={20} />
                 </a>
