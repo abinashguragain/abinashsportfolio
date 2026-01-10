@@ -5,6 +5,7 @@ import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useAnalytics } from "@/hooks/use-analytics";
 
 interface Author {
   id: string;
@@ -26,7 +27,7 @@ interface PostCategory {
   blog_categories: Category;
 }
 
-interface BlogPost {
+interface BlogPostData {
   id: string;
   title: string;
   slug: string;
@@ -39,6 +40,7 @@ interface BlogPost {
   author_id: string | null;
   authors: Author | null;
   blog_post_categories: PostCategory[];
+  custom_font: string | null;
 }
 
 interface RelatedPost {
@@ -54,7 +56,8 @@ interface RelatedPost {
 const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
   const { toast } = useToast();
-  const [post, setPost] = useState<BlogPost | null>(null);
+  const { trackBlogView } = useAnalytics();
+  const [post, setPost] = useState<BlogPostData | null>(null);
   const [relatedPosts, setRelatedPosts] = useState<RelatedPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
@@ -80,12 +83,14 @@ const BlogPost = () => {
         return;
       }
 
-      setPost(data as unknown as BlogPost);
-
-      // Fetch related posts - prioritize posts in same categories
-      const categoryIds = (data as any).blog_post_categories?.map((pc: any) => pc.category_id) || [];
+      const postData = data as unknown as BlogPostData;
+      setPost(postData);
       
-      let relatedQuery = supabase
+      // Track blog view
+      trackBlogView(postData.slug, postData.title);
+
+      // Fetch related posts
+      const relatedQuery = supabase
         .from("blog_posts")
         .select("id, title, slug, excerpt, read_time, published_at, featured_image")
         .eq("status", "published")
@@ -100,7 +105,7 @@ const BlogPost = () => {
     };
 
     fetchPost();
-  }, [slug]);
+  }, [slug, trackBlogView]);
 
   if (loading) {
     return (
@@ -149,8 +154,21 @@ const BlogPost = () => {
     return /<[a-z][\s\S]*>/i.test(content);
   };
 
+  // Generate font style for custom font
+  const customFontStyle = post.custom_font ? {
+    fontFamily: `"${post.custom_font}", sans-serif`
+  } : {};
+
   return (
     <Layout>
+      {/* Load custom font if specified */}
+      {post.custom_font && (
+        <link
+          href={`https://fonts.googleapis.com/css2?family=${post.custom_font.replace(/ /g, '+')}:wght@400;500;600;700&display=swap`}
+          rel="stylesheet"
+        />
+      )}
+      
       {/* Header */}
       <section className="py-8 md:py-12 bg-gradient-hero">
         <div className="container-narrow">
@@ -244,7 +262,7 @@ const BlogPost = () => {
       {/* Content */}
       <section className="section-padding bg-background">
         <div className="container-narrow">
-          <article className="prose-custom">
+          <article className="prose-custom" style={customFontStyle}>
             {post.content && (
               isHtmlContent(post.content) ? (
                 <div 

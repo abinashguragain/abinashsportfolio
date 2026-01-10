@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileText, MessageSquare, Eye, Users } from "lucide-react";
 import { Link } from "react-router-dom";
+import AnalyticsWidgets from "@/components/admin/AnalyticsWidgets";
 
 interface Stats {
   posts: number;
@@ -100,6 +101,12 @@ const AdminDashboard = () => {
             </Link>
           );
         })}
+      </div>
+
+      {/* Analytics Section */}
+      <div className="space-y-4">
+        <h2 className="text-2xl font-display text-foreground">Site Analytics</h2>
+        <AnalyticsWidgets />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

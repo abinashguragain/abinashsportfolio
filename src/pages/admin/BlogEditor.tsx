@@ -52,7 +52,14 @@ const BlogEditor = () => {
     is_featured: false,
     read_time: 5,
     author_id: "",
+    custom_font: "",
   });
+
+  const googleFonts = [
+    "Inter", "Roboto", "Open Sans", "Lato", "Montserrat", "Poppins",
+    "Playfair Display", "Merriweather", "Source Sans Pro", "Nunito",
+    "Raleway", "PT Sans", "Oswald", "Lora", "Crimson Text", "Libre Baskerville"
+  ];
 
   useEffect(() => {
     fetchAuthors();
@@ -108,6 +115,7 @@ const BlogEditor = () => {
       is_featured: postRes.data.is_featured || false,
       read_time: postRes.data.read_time || 5,
       author_id: postRes.data.author_id || "",
+      custom_font: postRes.data.custom_font || "",
     });
 
     if (categoriesRes.data) {
@@ -173,6 +181,7 @@ const BlogEditor = () => {
       read_time: form.read_time,
       author_id: form.author_id && form.author_id.length > 0 ? form.author_id : null,
       published_at: form.status === "published" ? new Date().toISOString() : null,
+      custom_font: form.custom_font || null,
     };
 
     let postId = id;
@@ -338,6 +347,30 @@ const BlogEditor = () => {
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+
+            {/* Categories */}
+            <div className="space-y-2">
+              <Label>Custom Font (Google Fonts)</Label>
+              <Select
+                value={form.custom_font || "none"}
+                onValueChange={(v) => setForm({ ...form, custom_font: v === "none" ? "" : v })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Default font" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Default font</SelectItem>
+                  {googleFonts.map((font) => (
+                    <SelectItem key={font} value={font}>
+                      {font}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                Select a Google Font for this blog post's content.
+              </p>
             </div>
 
             {/* Categories */}

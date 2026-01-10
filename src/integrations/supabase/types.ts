@@ -38,6 +38,39 @@ export type Database = {
         }
         Relationships: []
       }
+      analytics_events: {
+        Row: {
+          created_at: string
+          event_data: Json | null
+          event_type: string
+          id: string
+          page_path: string | null
+          referrer: string | null
+          session_id: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_data?: Json | null
+          event_type: string
+          id?: string
+          page_path?: string | null
+          referrer?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_data?: Json | null
+          event_type?: string
+          id?: string
+          page_path?: string | null
+          referrer?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       authors: {
         Row: {
           avatar_url: string | null
@@ -178,6 +211,7 @@ export type Database = {
           author_id: string | null
           content: string | null
           created_at: string
+          custom_font: string | null
           excerpt: string | null
           featured_image: string | null
           id: string
@@ -193,6 +227,7 @@ export type Database = {
           author_id?: string | null
           content?: string | null
           created_at?: string
+          custom_font?: string | null
           excerpt?: string | null
           featured_image?: string | null
           id?: string
@@ -208,6 +243,7 @@ export type Database = {
           author_id?: string | null
           content?: string | null
           created_at?: string
+          custom_font?: string | null
           excerpt?: string | null
           featured_image?: string | null
           id?: string
