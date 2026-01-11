@@ -493,6 +493,36 @@ export type Database = {
         }
         Relationships: []
       }
+      google_sheets_config: {
+        Row: {
+          created_at: string
+          id: string
+          is_enabled: boolean | null
+          service_account_credentials: string | null
+          sheet_name: string | null
+          spreadsheet_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_enabled?: boolean | null
+          service_account_credentials?: string | null
+          sheet_name?: string | null
+          spreadsheet_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_enabled?: boolean | null
+          service_account_credentials?: string | null
+          sheet_name?: string | null
+          spreadsheet_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       hero_content: {
         Row: {
           badge_subtitle: string | null

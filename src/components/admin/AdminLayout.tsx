@@ -7,7 +7,6 @@ import {
   FileText,
   Image,
   Users,
-  Settings,
   LogOut,
   Menu,
   X,
@@ -19,6 +18,7 @@ import {
   UserPen,
   FolderOpen,
   BarChart3,
+  FileSpreadsheet,
 } from "lucide-react";
 
 const sidebarLinks = [
@@ -36,6 +36,7 @@ const sidebarLinks = [
   { href: "/admin/authors", label: "Authors", icon: UserPen },
   { href: "/admin/contacts", label: "Messages", icon: MessageSquare },
   { href: "/admin/integrations", label: "Analytics & SEO", icon: BarChart3 },
+  { href: "/admin/google-sheets", label: "Google Sheets", icon: FileSpreadsheet },
 ];
 
 const AdminLayout = () => {
