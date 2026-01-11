@@ -27,6 +27,21 @@ const Contact = () => {
     }));
   };
 
+  // Log to Google Sheets (fire and forget, errors don't block submission)
+  const logToGoogleSheets = async (data: typeof formData) => {
+    try {
+      await supabase.functions.invoke("log-to-sheets", {
+        body: {
+          formData: data,
+          sourceUrl: window.location.href,
+        },
+      });
+    } catch (error) {
+      // Silently fail - Google Sheets errors should not block form submission
+      console.warn("Google Sheets logging failed (non-blocking):", error);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -40,6 +55,9 @@ const Contact = () => {
       });
 
       if (error) throw error;
+
+      // Log to Google Sheets in background (non-blocking)
+      logToGoogleSheets(formData);
 
       toast({
         title: "Message sent!",

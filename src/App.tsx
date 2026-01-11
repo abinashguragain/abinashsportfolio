@@ -29,6 +29,7 @@ import CTAEditor from "./pages/admin/CTAEditor";
 import FooterEditor from "./pages/admin/FooterEditor";
 import CategoriesEditor from "./pages/admin/CategoriesEditor";
 import IntegrationsEditor from "./pages/admin/IntegrationsEditor";
+import GoogleSheetsEditor from "./pages/admin/GoogleSheetsEditor";
 
 const queryClient = new QueryClient();
 
@@ -65,6 +66,7 @@ const App = () => (
               <Route path="authors" element={<AuthorsEditor />} />
               <Route path="contacts" element={<ContactsList />} />
               <Route path="integrations" element={<IntegrationsEditor />} />
+              <Route path="google-sheets" element={<GoogleSheetsEditor />} />
             </Route>
             
             <Route path="*" element={<NotFound />} />
