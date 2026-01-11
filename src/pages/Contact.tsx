@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Send } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -8,15 +8,109 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
+// Extend Window interface for Turnstile
+declare global {
+  interface Window {
+    turnstile?: {
+      render: (element: HTMLElement, options: {
+        sitekey: string;
+        callback: (token: string) => void;
+        "expired-callback"?: () => void;
+        "error-callback"?: () => void;
+        theme?: "light" | "dark" | "auto";
+      }) => string;
+      reset: (widgetId: string) => void;
+      remove: (widgetId: string) => void;
+    };
+  }
+}
+
 const Contact = () => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [siteKey, setSiteKey] = useState<string | null>(null);
+  const [turnstileLoaded, setTurnstileLoaded] = useState(false);
+  const turnstileRef = useRef<HTMLDivElement>(null);
+  const widgetIdRef = useRef<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     subject: "",
     message: "",
   });
+
+  // Fetch site key from database
+  useEffect(() => {
+    const fetchSiteKey = async () => {
+      const { data } = await supabase
+        .from("site_settings")
+        .select("value")
+        .eq("key", "turnstile_site_key")
+        .single();
+      
+      if (data?.value) {
+        setSiteKey(data.value);
+      }
+    };
+    fetchSiteKey();
+  }, []);
+
+  // Load Turnstile script
+  useEffect(() => {
+    if (!siteKey) return;
+
+    const existingScript = document.querySelector('script[src*="turnstile"]');
+    if (existingScript) {
+      setTurnstileLoaded(true);
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+    script.async = true;
+    script.defer = true;
+    script.onload = () => setTurnstileLoaded(true);
+    document.head.appendChild(script);
+
+    return () => {
+      // Cleanup widget on unmount
+      if (widgetIdRef.current && window.turnstile) {
+        window.turnstile.remove(widgetIdRef.current);
+      }
+    };
+  }, [siteKey]);
+
+  // Render Turnstile widget
+  useEffect(() => {
+    if (!turnstileLoaded || !siteKey || !turnstileRef.current || !window.turnstile) return;
+
+    // Remove existing widget if any
+    if (widgetIdRef.current) {
+      window.turnstile.remove(widgetIdRef.current);
+    }
+
+    widgetIdRef.current = window.turnstile.render(turnstileRef.current, {
+      sitekey: siteKey,
+      callback: (token: string) => {
+        setTurnstileToken(token);
+      },
+      "expired-callback": () => {
+        setTurnstileToken(null);
+      },
+      "error-callback": () => {
+        setTurnstileToken(null);
+      },
+      theme: "auto",
+    });
+  }, [turnstileLoaded, siteKey]);
+
+  const resetTurnstile = useCallback(() => {
+    if (widgetIdRef.current && window.turnstile) {
+      window.turnstile.reset(widgetIdRef.current);
+      setTurnstileToken(null);
+    }
+  }, []);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -47,6 +141,35 @@ const Contact = () => {
     setIsSubmitting(true);
 
     try {
+      // Verify CAPTCHA if enabled
+      if (siteKey) {
+        if (!turnstileToken) {
+          toast({
+            title: "Please complete the CAPTCHA",
+            description: "Verify you're human before submitting.",
+            variant: "destructive",
+          });
+          setIsSubmitting(false);
+          return;
+        }
+
+        // Verify token server-side
+        const { data: verifyData, error: verifyError } = await supabase.functions.invoke("verify-turnstile", {
+          body: { token: turnstileToken },
+        });
+
+        if (verifyError || !verifyData?.success) {
+          toast({
+            title: "CAPTCHA verification failed",
+            description: "Please try again.",
+            variant: "destructive",
+          });
+          resetTurnstile();
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
       const { error } = await supabase.from("contact_submissions").insert({
         name: formData.name,
         email: formData.email,
@@ -65,6 +188,7 @@ const Contact = () => {
       });
 
       setFormData({ name: "", email: "", subject: "", message: "" });
+      resetTurnstile();
     } catch (error) {
       console.error("Error submitting form:", error);
       toast({
@@ -146,11 +270,18 @@ const Contact = () => {
                   />
                 </div>
 
+                {/* Turnstile CAPTCHA */}
+                {siteKey && (
+                  <div className="flex justify-center">
+                    <div ref={turnstileRef} />
+                  </div>
+                )}
+
                 <Button
                   type="submit"
                   variant="hero"
                   size="lg"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || (siteKey && !turnstileToken)}
                   className="w-full sm:w-auto"
                 >
                   {isSubmitting ? (
