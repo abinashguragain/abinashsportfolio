@@ -9,18 +9,17 @@ import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
 
 const authSchema = z.object({
-  email: z.string().email("Please enter a valid email"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  email: z.string().email("Please enter a valid email").max(255, "Email too long"),
+  password: z.string().min(6, "Password must be at least 6 characters").max(128, "Password too long"),
 });
 
 const AdminAuth = () => {
-  const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   
-  const { user, isAdmin, signIn, signUp } = useAuth();
+  const { user, isAdmin, signIn } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -48,34 +47,18 @@ const AdminAuth = () => {
     setIsSubmitting(true);
 
     try {
-      if (isLogin) {
-        const { error } = await signIn(email, password);
-        if (error) {
-          toast({
-            title: "Login failed",
-            description: error.message,
-            variant: "destructive",
-          });
-        } else {
-          toast({
-            title: "Welcome back!",
-            description: "You have successfully logged in.",
-          });
-        }
+      const { error } = await signIn(email, password);
+      if (error) {
+        toast({
+          title: "Login failed",
+          description: error.message,
+          variant: "destructive",
+        });
       } else {
-        const { error } = await signUp(email, password);
-        if (error) {
-          toast({
-            title: "Signup failed",
-            description: error.message,
-            variant: "destructive",
-          });
-        } else {
-          toast({
-            title: "Account created",
-            description: "Please contact an admin to grant you access.",
-          });
-        }
+        toast({
+          title: "Welcome back!",
+          description: "You have successfully logged in.",
+        });
       }
     } catch (err) {
       toast({
@@ -92,13 +75,9 @@ const AdminAuth = () => {
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-display">
-            {isLogin ? "Admin Login" : "Create Account"}
-          </CardTitle>
+          <CardTitle className="text-2xl font-display">Admin Login</CardTitle>
           <CardDescription>
-            {isLogin
-              ? "Enter your credentials to access the admin panel"
-              : "Sign up for an account"}
+            Enter your credentials to access the admin panel
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -112,6 +91,7 @@ const AdminAuth = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={isSubmitting}
+                autoComplete="email"
               />
               {errors.email && (
                 <p className="text-sm text-destructive">{errors.email}</p>
@@ -126,6 +106,7 @@ const AdminAuth = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isSubmitting}
+                autoComplete="current-password"
               />
               {errors.password && (
                 <p className="text-sm text-destructive">{errors.password}</p>
@@ -136,24 +117,9 @@ const AdminAuth = () => {
               className="w-full"
               disabled={isSubmitting}
             >
-              {isSubmitting
-                ? "Please wait..."
-                : isLogin
-                ? "Sign In"
-                : "Create Account"}
+              {isSubmitting ? "Signing in..." : "Sign In"}
             </Button>
           </form>
-          <div className="mt-4 text-center">
-            <button
-              type="button"
-              onClick={() => setIsLogin(!isLogin)}
-              className="text-sm text-muted-foreground hover:text-primary transition-colors"
-            >
-              {isLogin
-                ? "Need an account? Sign up"
-                : "Already have an account? Sign in"}
-            </button>
-          </div>
         </CardContent>
       </Card>
     </div>

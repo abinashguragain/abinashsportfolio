@@ -30,6 +30,7 @@ import FooterEditor from "./pages/admin/FooterEditor";
 import CategoriesEditor from "./pages/admin/CategoriesEditor";
 import IntegrationsEditor from "./pages/admin/IntegrationsEditor";
 import GoogleSheetsEditor from "./pages/admin/GoogleSheetsEditor";
+import ActivityLogs from "./pages/admin/ActivityLogs";
 
 const queryClient = new QueryClient();
 
@@ -67,6 +68,7 @@ const App = () => (
               <Route path="contacts" element={<ContactsList />} />
               <Route path="integrations" element={<IntegrationsEditor />} />
               <Route path="google-sheets" element={<GoogleSheetsEditor />} />
+              <Route path="activity-logs" element={<ActivityLogs />} />
             </Route>
             
             <Route path="*" element={<NotFound />} />
