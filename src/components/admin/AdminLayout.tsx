@@ -1,7 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation, Outlet } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   LayoutDashboard,
   FileText,
@@ -19,30 +22,88 @@ import {
   FolderOpen,
   BarChart3,
   FileSpreadsheet,
+  ChevronDown,
+  Shield,
+  Search,
 } from "lucide-react";
 
-const sidebarLinks = [
-  { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/navigation", label: "Navigation", icon: Navigation },
-  { href: "/admin/hero", label: "Hero Section", icon: Image },
-  { href: "/admin/about", label: "About", icon: Users },
-  { href: "/admin/experience", label: "Experience", icon: Briefcase },
-  { href: "/admin/services", label: "Services", icon: Briefcase },
-  { href: "/admin/cta", label: "CTA Section", icon: MousePointerClick },
-  { href: "/admin/footer", label: "Footer", icon: PanelBottom },
-  { href: "/admin/testimonials", label: "Testimonials", icon: MessageSquare },
-  { href: "/admin/blog", label: "Blog Posts", icon: FileText },
-  { href: "/admin/categories", label: "Categories", icon: FolderOpen },
-  { href: "/admin/authors", label: "Authors", icon: UserPen },
-  { href: "/admin/contacts", label: "Messages", icon: MessageSquare },
-  { href: "/admin/integrations", label: "Analytics & SEO", icon: BarChart3 },
-  { href: "/admin/google-sheets", label: "Google Sheets", icon: FileSpreadsheet },
-];
+import { LucideIcon } from "lucide-react";
+
+interface MenuGroup {
+  label: string;
+  items: {
+    href: string;
+    label: string;
+    icon: LucideIcon;
+    badge?: number;
+  }[];
+}
 
 const AdminLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [expandedGroups, setExpandedGroups] = useState<string[]>(["Content", "Blog", "Engagement", "Analytics"]);
+  const [unreadCount, setUnreadCount] = useState(0);
   const location = useLocation();
   const { signOut, user } = useAuth();
+
+  useEffect(() => {
+    const fetchUnreadCount = async () => {
+      const { count } = await supabase
+        .from("contact_submissions")
+        .select("*", { count: "exact", head: true })
+        .eq("is_read", false);
+      setUnreadCount(count || 0);
+    };
+    fetchUnreadCount();
+  }, []);
+
+  const menuGroups: MenuGroup[] = [
+    {
+      label: "Content",
+      items: [
+        { href: "/admin/hero", label: "Hero Section", icon: Image },
+        { href: "/admin/about", label: "About", icon: Users },
+        { href: "/admin/experience", label: "Experience", icon: Briefcase },
+        { href: "/admin/services", label: "Services", icon: Briefcase },
+        { href: "/admin/cta", label: "CTA Section", icon: MousePointerClick },
+        { href: "/admin/testimonials", label: "Testimonials", icon: MessageSquare },
+        { href: "/admin/footer", label: "Footer", icon: PanelBottom },
+      ],
+    },
+    {
+      label: "Blog",
+      items: [
+        { href: "/admin/blog", label: "Posts", icon: FileText },
+        { href: "/admin/categories", label: "Categories", icon: FolderOpen },
+        { href: "/admin/authors", label: "Authors", icon: UserPen },
+      ],
+    },
+    {
+      label: "Engagement",
+      items: [
+        { href: "/admin/contacts", label: "Messages", icon: MessageSquare, badge: unreadCount },
+        { href: "/admin/google-sheets", label: "Google Sheets", icon: FileSpreadsheet },
+      ],
+    },
+    {
+      label: "Analytics",
+      items: [
+        { href: "/admin/integrations", label: "Analytics & SEO", icon: BarChart3 },
+        { href: "/admin/activity-logs", label: "Activity Logs", icon: Shield },
+      ],
+    },
+  ];
+
+  const standaloneLinks = [
+    { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/admin/navigation", label: "Navigation", icon: Navigation },
+  ];
+
+  const toggleGroup = (label: string) => {
+    setExpandedGroups((prev) =>
+      prev.includes(label) ? prev.filter((g) => g !== label) : [...prev, label]
+    );
+  };
 
   const handleSignOut = async () => {
     await signOut();
@@ -77,10 +138,10 @@ const AdminLayout = () => {
 
           {/* Navigation */}
           <nav className="flex-1 py-4 overflow-y-auto">
-            {sidebarLinks.map((link) => {
+            {/* Standalone links */}
+            {standaloneLinks.map((link) => {
               const Icon = link.icon;
               const isActive = location.pathname === link.href;
-              
               return (
                 <Link
                   key={link.href}
@@ -97,6 +158,53 @@ const AdminLayout = () => {
                 </Link>
               );
             })}
+
+            {/* Grouped links */}
+            {menuGroups.map((group) => (
+              <Collapsible
+                key={group.label}
+                open={expandedGroups.includes(group.label)}
+                onOpenChange={() => toggleGroup(group.label)}
+              >
+                <CollapsibleTrigger className="flex items-center justify-between w-full px-6 py-3 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
+                  <span>{group.label}</span>
+                  <ChevronDown
+                    size={16}
+                    className={`transition-transform ${
+                      expandedGroups.includes(group.label) ? "rotate-180" : ""
+                    }`}
+                  />
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  {group.items.map((link) => {
+                    const Icon = link.icon;
+                    const isActive = location.pathname === link.href;
+                    return (
+                      <Link
+                        key={link.href}
+                        to={link.href}
+                        onClick={() => setSidebarOpen(false)}
+                        className={`flex items-center justify-between gap-3 pl-10 pr-6 py-2.5 text-sm transition-colors ${
+                          isActive
+                            ? "bg-primary/10 text-primary border-r-2 border-primary"
+                            : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                        }`}
+                      >
+                        <span className="flex items-center gap-3">
+                          <Icon size={16} />
+                          {link.label}
+                        </span>
+                        {link.badge !== undefined && link.badge > 0 && (
+                          <Badge variant="destructive" className="text-xs h-5 min-w-5 flex items-center justify-center">
+                            {link.badge}
+                          </Badge>
+                        )}
+                      </Link>
+                    );
+                  })}
+                </CollapsibleContent>
+              </Collapsible>
+            ))}
           </nav>
 
           {/* Footer */}
