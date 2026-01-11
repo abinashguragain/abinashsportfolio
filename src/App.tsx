@@ -20,7 +20,7 @@ import AboutEditor from "./pages/admin/AboutEditor";
 import ServicesEditor from "./pages/admin/ServicesEditor";
 import ExperienceEditor from "./pages/admin/ExperienceEditor";
 import TestimonialsEditor from "./pages/admin/TestimonialsEditor";
-import BlogList from "./pages/admin/BlogList";
+import BlogManagement from "./pages/admin/BlogManagement";
 import BlogEditor from "./pages/admin/BlogEditor";
 import AuthorsEditor from "./pages/admin/AuthorsEditor";
 import ContactsList from "./pages/admin/ContactsList";
@@ -59,7 +59,7 @@ const App = () => (
               <Route path="cta" element={<CTAEditor />} />
               <Route path="footer" element={<FooterEditor />} />
               <Route path="testimonials" element={<TestimonialsEditor />} />
-              <Route path="blog" element={<BlogList />} />
+              <Route path="blog" element={<BlogManagement />} />
               <Route path="blog/:id" element={<BlogEditor />} />
               <Route path="categories" element={<CategoriesEditor />} />
               <Route path="authors" element={<AuthorsEditor />} />
