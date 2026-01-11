@@ -2,3 +2,6 @@ project_id = "hzmljxtklixcisasjqwg"
 
 [functions.log-to-sheets]
 verify_jwt = false
+
+[functions.verify-turnstile]
+verify_jwt = false

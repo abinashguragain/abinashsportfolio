@@ -3,10 +3,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, AlertTriangle, Code } from "lucide-react";
+import { Loader2, AlertTriangle, Code, ShieldCheck } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface Integration {
@@ -91,6 +92,7 @@ const IntegrationsEditor = () => {
   const [gscCode, setGscCode] = useState("");
   const [gaActive, setGaActive] = useState(true);
   const [gscActive, setGscActive] = useState(true);
+  const [turnstileSiteKey, setTurnstileSiteKey] = useState("");
   const [validationErrors, setValidationErrors] = useState<{ ga?: string; gsc?: string }>({});
   const { toast } = useToast();
 
@@ -99,14 +101,15 @@ const IntegrationsEditor = () => {
   }, []);
 
   const fetchIntegrations = async () => {
-    const { data, error } = await supabase
-      .from("third_party_integrations")
-      .select("*");
+    const [integrationsResult, siteSettingsResult] = await Promise.all([
+      supabase.from("third_party_integrations").select("*"),
+      supabase.from("site_settings").select("*").eq("key", "turnstile_site_key").single(),
+    ]);
 
-    if (data) {
-      setIntegrations(data);
-      const ga = data.find(i => i.key === "google_analytics");
-      const gsc = data.find(i => i.key === "google_search_console");
+    if (integrationsResult.data) {
+      setIntegrations(integrationsResult.data);
+      const ga = integrationsResult.data.find(i => i.key === "google_analytics");
+      const gsc = integrationsResult.data.find(i => i.key === "google_search_console");
       
       if (ga) {
         setGaCode(ga.value || "");
@@ -117,6 +120,11 @@ const IntegrationsEditor = () => {
         setGscActive(gsc.is_active);
       }
     }
+
+    if (siteSettingsResult.data?.value) {
+      setTurnstileSiteKey(siteSettingsResult.data.value);
+    }
+
     setLoading(false);
   };
 
@@ -178,6 +186,14 @@ const IntegrationsEditor = () => {
           .eq("id", gscIntegration.id)
       );
     }
+
+    // Save Turnstile site key
+    updates.push(
+      supabase
+        .from("site_settings")
+        .update({ value: turnstileSiteKey.trim() || null })
+        .eq("key", "turnstile_site_key")
+    );
     
     const results = await Promise.all(updates);
     const hasError = results.some(r => r.error);
@@ -191,7 +207,7 @@ const IntegrationsEditor = () => {
     } else {
       toast({
         title: "Saved & Activated",
-        description: "Integration codes updated successfully. Changes may take a few minutes to reflect on the website.",
+        description: "Integration settings updated successfully.",
       });
     }
     
@@ -313,6 +329,48 @@ const IntegrationsEditor = () => {
                 Paste the meta tag from Google Search Console, or just the verification code.
               </p>
             </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <ShieldCheck className="h-5 w-5 text-primary" />
+              <div>
+                <CardTitle>Cloudflare Turnstile (CAPTCHA)</CardTitle>
+                <CardDescription>Protect forms from spam with invisible CAPTCHA</CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="turnstile_key">Site Key</Label>
+              <Input
+                id="turnstile_key"
+                value={turnstileSiteKey}
+                onChange={(e) => setTurnstileSiteKey(e.target.value)}
+                placeholder="0x4AAAAAAA..."
+                className="font-mono"
+              />
+              <p className="text-xs text-muted-foreground">
+                Get your site key from the{" "}
+                <a
+                  href="https://dash.cloudflare.com/?to=/:account/turnstile"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary underline"
+                >
+                  Cloudflare Turnstile dashboard
+                </a>
+                . Leave empty to disable CAPTCHA on forms.
+              </p>
+            </div>
+            <Alert>
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription>
+                The Secret Key must be configured separately in backend secrets. The Site Key (public) is stored here.
+              </AlertDescription>
+            </Alert>
           </CardContent>
         </Card>
       </div>
