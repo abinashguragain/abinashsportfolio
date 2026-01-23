@@ -191,7 +191,7 @@ const ExperienceEditor = () => {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-display text-foreground">Experience Page</h1>
+        <h1 className="text-3xl font-admin-heading font-bold text-foreground">Experience Page</h1>
         <p className="text-muted-foreground mt-1">Manage your experience page content</p>
       </div>
 
@@ -326,7 +326,7 @@ const ExperienceEditor = () => {
       {/* Experiences List */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-display text-foreground">Experiences</h2>
+          <h2 className="text-xl font-admin-heading font-bold text-foreground">Experiences</h2>
           <Button onClick={handleAddExperience} size="sm">
             <Plus className="mr-2 h-4 w-4" />
             Add Experience

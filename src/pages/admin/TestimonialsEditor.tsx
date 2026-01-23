@@ -144,7 +144,7 @@ const TestimonialsEditor = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-display text-foreground">Testimonials</h1>
+          <h1 className="text-3xl font-admin-heading font-bold text-foreground">Testimonials</h1>
           <p className="text-muted-foreground mt-1">Manage client testimonials</p>
         </div>
         <Button onClick={handleAddNew}>

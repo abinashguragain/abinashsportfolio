@@ -166,7 +166,7 @@ const CategoriesEditor = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-display">Categories</h1>
+          <h1 className="text-3xl font-admin-heading font-bold">Categories</h1>
           <p className="text-muted-foreground">Manage blog categories</p>
         </div>
         <Button onClick={() => openDialog()}>

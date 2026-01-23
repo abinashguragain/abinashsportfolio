@@ -16,7 +16,9 @@ export default {
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
         display: ['Bebas Neue', 'Impact', 'sans-serif'],
+        'blog-heading': ['Montserrat', 'system-ui', 'sans-serif'],
         'admin-display': ['Nunito', 'system-ui', 'sans-serif'],
+        'admin-heading': ['Montserrat', 'system-ui', 'sans-serif'],
         'admin-sans': ['PT Sans', 'system-ui', 'sans-serif'],
       },
       colors: {

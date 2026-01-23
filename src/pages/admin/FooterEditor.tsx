@@ -176,7 +176,7 @@ const FooterEditor = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-display text-foreground">Footer</h1>
+          <h1 className="text-3xl font-admin-heading font-bold text-foreground">Footer</h1>
           <p className="text-muted-foreground mt-1">Edit footer content, links, and social icons</p>
         </div>
         <Button onClick={handleSave} disabled={saving}>

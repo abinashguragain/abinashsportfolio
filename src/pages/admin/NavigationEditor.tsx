@@ -157,7 +157,7 @@ const NavigationEditor = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Navigation & Branding</h1>
+        <h1 className="text-2xl font-admin-heading font-bold">Navigation & Branding</h1>
         <Button onClick={handleSave} disabled={saving}>
           {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
           Save Changes
