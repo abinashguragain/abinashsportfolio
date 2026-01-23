@@ -3,6 +3,7 @@ import { ArrowRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { renderTextWithLinks } from "@/lib/parseLinks";
 
 interface CTAContent {
   title: string;
@@ -69,9 +70,10 @@ export const CTASection = () => {
         <h2 className="font-display text-3xl md:text-4xl lg:text-5xl text-foreground mb-4">
           {renderTitle()}
         </h2>
-        <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mb-8">
-          {description}
-        </p>
+        <p 
+          className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mb-8"
+          dangerouslySetInnerHTML={renderTextWithLinks(description)}
+        />
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button variant="hero" size="lg" asChild>
             <Link to={buttonLink}>

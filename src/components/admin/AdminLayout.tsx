@@ -25,6 +25,7 @@ import {
   ChevronDown,
   Shield,
   Search,
+  Globe,
 } from "lucide-react";
 
 import { LucideIcon } from "lucide-react";
@@ -41,7 +42,7 @@ interface MenuGroup {
 
 const AdminLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [expandedGroups, setExpandedGroups] = useState<string[]>(["Content", "Blog", "Engagement", "Analytics"]);
+  const [expandedGroups, setExpandedGroups] = useState<string[]>(["Content", "Blog", "Engagement", "Settings"]);
   const [unreadCount, setUnreadCount] = useState(0);
   const location = useLocation();
   const { signOut, user } = useAuth();
@@ -86,9 +87,10 @@ const AdminLayout = () => {
       ],
     },
     {
-      label: "Analytics",
+      label: "Settings",
       items: [
-        { href: "/admin/integrations", label: "Analytics & SEO", icon: BarChart3 },
+        { href: "/admin/seo", label: "SEO Settings", icon: Globe },
+        { href: "/admin/integrations", label: "Analytics", icon: BarChart3 },
         { href: "/admin/activity-logs", label: "Activity Logs", icon: Shield },
       ],
     },

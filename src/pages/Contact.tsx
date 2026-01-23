@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { SEOHead } from "@/components/SEOHead";
 
 // Extend Window interface for Turnstile
 declare global {
@@ -203,6 +204,10 @@ const Contact = () => {
 
   return (
     <Layout>
+      <SEOHead 
+        title="Contact" 
+        description="Get in touch with me. I'd love to hear about your project."
+      />
       {/* Header */}
       <section className="section-padding bg-gradient-hero">
         <div className="container-narrow text-center">

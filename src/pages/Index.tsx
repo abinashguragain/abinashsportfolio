@@ -4,10 +4,12 @@ import { AboutSection } from "@/components/home/AboutSection";
 import { TestimonialsSection } from "@/components/home/TestimonialsSection";
 import { LatestBlogsSection } from "@/components/home/LatestBlogsSection";
 import { CTASection } from "@/components/home/CTASection";
+import { SEOHead } from "@/components/SEOHead";
 
 const Index = () => {
   return (
     <Layout>
+      <SEOHead />
       <HeroSection />
       <AboutSection />
       <TestimonialsSection />

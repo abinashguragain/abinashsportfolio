@@ -13,6 +13,7 @@ import {
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import { supabase } from "@/integrations/supabase/client";
+import { SEOHead } from "@/components/SEOHead";
 
 interface Author {
   id: string;
@@ -40,6 +41,7 @@ interface BlogPost {
   published_at: string | null;
   is_featured: boolean | null;
   featured_image: string | null;
+  featured_image_alt: string | null;
   authors: Author | null;
   blog_post_categories: PostCategory[];
 }
@@ -63,7 +65,7 @@ const Blog = () => {
       supabase
         .from("blog_posts")
         .select(`
-          id, title, slug, excerpt, read_time, published_at, is_featured, featured_image, 
+          id, title, slug, excerpt, read_time, published_at, is_featured, featured_image, featured_image_alt,
           authors(id, name),
           blog_post_categories(category_id, is_primary, blog_categories(id, name, slug))
         `)
@@ -132,6 +134,10 @@ const Blog = () => {
 
   return (
     <Layout>
+      <SEOHead 
+        title="Blog" 
+        description="Read the latest articles and insights"
+      />
       {/* Filters */}
       <section className="py-4 bg-background">
         <div className="container-wide">
@@ -264,7 +270,8 @@ const Blog = () => {
                       <div className="aspect-video overflow-hidden">
                         <img
                           src={post.featured_image}
-                          alt={post.title}
+                          alt={post.featured_image_alt || post.title}
+                          title={post.featured_image_alt || post.title}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                       </div>

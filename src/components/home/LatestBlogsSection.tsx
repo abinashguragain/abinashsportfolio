@@ -12,6 +12,7 @@ interface BlogPost {
   read_time: number | null;
   published_at: string | null;
   featured_image: string | null;
+  featured_image_alt: string | null;
 }
 
 export const LatestBlogsSection = () => {
@@ -22,7 +23,7 @@ export const LatestBlogsSection = () => {
     const fetchPosts = async () => {
       const { data } = await supabase
         .from("blog_posts")
-        .select("id, title, slug, excerpt, read_time, published_at, featured_image")
+        .select("id, title, slug, excerpt, read_time, published_at, featured_image, featured_image_alt")
         .eq("status", "published")
         .order("published_at", { ascending: false })
         .limit(3);
@@ -80,7 +81,8 @@ export const LatestBlogsSection = () => {
                   <div className="aspect-video overflow-hidden">
                     <img
                       src={post.featured_image}
-                      alt={post.title}
+                      alt={post.featured_image_alt || post.title}
+                      title={post.featured_image_alt || post.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   </div>

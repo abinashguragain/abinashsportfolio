@@ -42,7 +42,7 @@ const ALLOWED_TABLES = [
   'testimonials', 'footer_content', 'footer_links', 'social_links',
   'blog_posts', 'blog_categories', 'blog_tags', 'blog_post_categories', 'blog_post_tags',
   'authors', 'experiences', 'experience_page_content',
-  'nav_links', 'navigation_settings', 'site_settings',
+  'nav_links', 'navigation_settings', 'site_settings', 'seo_settings',
   'google_sheets_config', 'third_party_integrations', 'contact_submissions'
 ];
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PenTool, Target, Sparkles, Users, Loader2, LucideIcon } from "lucide-react";
+import { renderTextWithLinks } from "@/lib/parseLinks";
 
 interface Service {
   id: string;
@@ -80,7 +81,10 @@ export const AboutSection = () => {
                   <IconComponent size={24} className="text-accent-foreground group-hover:text-primary-foreground" />
                 </div>
                 <h3 className="font-display text-xl text-foreground mb-2">{service.title}</h3>
-                <p className="text-muted-foreground text-sm">{service.description}</p>
+                <p 
+                  className="text-muted-foreground text-sm"
+                  dangerouslySetInnerHTML={renderTextWithLinks(service.description)}
+                />
               </div>
             );
           })}

@@ -31,6 +31,7 @@ import CategoriesEditor from "./pages/admin/CategoriesEditor";
 import IntegrationsEditor from "./pages/admin/IntegrationsEditor";
 import GoogleSheetsEditor from "./pages/admin/GoogleSheetsEditor";
 import ActivityLogs from "./pages/admin/ActivityLogs";
+import SEOEditor from "./pages/admin/SEOEditor";
 
 const queryClient = new QueryClient();
 
@@ -69,6 +70,7 @@ const App = () => (
               <Route path="integrations" element={<IntegrationsEditor />} />
               <Route path="google-sheets" element={<GoogleSheetsEditor />} />
               <Route path="activity-logs" element={<ActivityLogs />} />
+              <Route path="seo" element={<SEOEditor />} />
             </Route>
             
             <Route path="*" element={<NotFound />} />
