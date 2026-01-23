@@ -445,6 +445,7 @@ export type Database = {
           sort_order: number | null
           start_date: string | null
           title: string
+          title_link: string | null
           updated_at: string
         }
         Insert: {
@@ -461,6 +462,7 @@ export type Database = {
           sort_order?: number | null
           start_date?: string | null
           title: string
+          title_link?: string | null
           updated_at?: string
         }
         Update: {
@@ -477,6 +479,7 @@ export type Database = {
           sort_order?: number | null
           start_date?: string | null
           title?: string
+          title_link?: string | null
           updated_at?: string
         }
         Relationships: []

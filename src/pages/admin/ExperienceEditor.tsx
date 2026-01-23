@@ -4,20 +4,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Plus, Trash2, GripVertical, X } from "lucide-react";
+import { Loader2, Plus, Trash2, GripVertical, X, Info } from "lucide-react";
 
 interface Experience {
   id: string;
   title: string;
+  title_link: string | null;
   company: string | null;
   description: string | null;
   highlights: string[];
-  icon: string;
-  accent: string;
+  start_date: string | null;
+  end_date: string | null;
   is_active: boolean;
   is_current: boolean;
   sort_order: number;
@@ -35,21 +35,6 @@ interface PageContent {
   cta_button_link: string | null;
   cta_visible: boolean;
 }
-
-const iconOptions = [
-  { value: "Briefcase", label: "Briefcase" },
-  { value: "PenTool", label: "Pen Tool" },
-  { value: "Target", label: "Target" },
-  { value: "Lightbulb", label: "Lightbulb" },
-  { value: "Users", label: "Users" },
-  { value: "Zap", label: "Zap" },
-];
-
-const accentOptions = [
-  { value: "primary", label: "Primary" },
-  { value: "accent", label: "Accent" },
-  { value: "secondary", label: "Secondary" },
-];
 
 const ExperienceEditor = () => {
   const [experiences, setExperiences] = useState<Experience[]>([]);
@@ -111,8 +96,6 @@ const ExperienceEditor = () => {
       .from("experiences")
       .insert({
         title: "New Experience",
-        icon: "Briefcase",
-        accent: "primary",
         sort_order: newOrder,
         highlights: [],
       })
@@ -132,11 +115,12 @@ const ExperienceEditor = () => {
       .from("experiences")
       .update({
         title: exp.title,
+        title_link: exp.title_link,
         company: exp.company,
         description: exp.description,
         highlights: exp.highlights,
-        icon: exp.icon,
-        accent: exp.accent,
+        start_date: exp.start_date,
+        end_date: exp.end_date,
         is_active: exp.is_active,
         is_current: exp.is_current,
         sort_order: exp.sort_order,
@@ -375,7 +359,7 @@ const ExperienceEditor = () => {
                           updateExperienceField(exp.id, "is_current", checked)
                         }
                       />
-                      <Label className="text-sm">Current Focus</Label>
+                      <Label className="text-sm">Current Position</Label>
                     </div>
                     <Button
                       variant="destructive"
@@ -387,72 +371,76 @@ const ExperienceEditor = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {/* Date Fields */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Title</Label>
+                    <Label>Start Date</Label>
+                    <Input
+                      type="date"
+                      value={exp.start_date || ""}
+                      onChange={(e) => updateExperienceField(exp.id, "start_date", e.target.value || null)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>End Date {exp.is_current && <span className="text-muted-foreground">(ignored if Current)</span>}</Label>
+                    <Input
+                      type="date"
+                      value={exp.end_date || ""}
+                      onChange={(e) => updateExperienceField(exp.id, "end_date", e.target.value || null)}
+                      disabled={exp.is_current}
+                    />
+                  </div>
+                </div>
+
+                {/* Title and Company */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Job Title</Label>
                     <Input
                       value={exp.title}
                       onChange={(e) => updateExperienceField(exp.id, "title", e.target.value)}
+                      placeholder="e.g., Software Engineer"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Company/Subtitle</Label>
+                    <Label>Title Link (optional)</Label>
                     <Input
-                      value={exp.company || ""}
-                      onChange={(e) => updateExperienceField(exp.id, "company", e.target.value)}
+                      value={exp.title_link || ""}
+                      onChange={(e) => updateExperienceField(exp.id, "title_link", e.target.value || null)}
+                      placeholder="https://company.com"
                     />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Icon</Label>
-                    <Select
-                      value={exp.icon}
-                      onValueChange={(value) => updateExperienceField(exp.id, "icon", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {iconOptions.map((opt) => (
-                          <SelectItem key={opt.value} value={opt.value}>
-                            {opt.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Accent Color</Label>
-                    <Select
-                      value={exp.accent}
-                      onValueChange={(value) => updateExperienceField(exp.id, "accent", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {accentOptions.map((opt) => (
-                          <SelectItem key={opt.value} value={opt.value}>
-                            {opt.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Description</Label>
+                  <Label>Company</Label>
+                  <Input
+                    value={exp.company || ""}
+                    onChange={(e) => updateExperienceField(exp.id, "company", e.target.value)}
+                    placeholder="e.g., Acme Corp"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Description (optional, shown if no highlights)</Label>
                   <Textarea
                     value={exp.description || ""}
                     onChange={(e) => updateExperienceField(exp.id, "description", e.target.value)}
                     rows={2}
+                    placeholder="Brief description of the role..."
                   />
                 </div>
 
                 {/* Highlights/Bullet Points */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <Label>Highlights (Bullet Points)</Label>
+                    <div className="space-y-1">
+                      <Label>Bullet Points</Label>
+                      <p className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Info className="h-3 w-3" />
+                        Use [text](url) for links. e.g., Built [Retack AI](https://retack.ai)
+                      </p>
+                    </div>
                     <Button variant="outline" size="sm" onClick={() => addHighlight(exp.id)}>
                       <Plus className="mr-1 h-3 w-3" />
                       Add
@@ -464,7 +452,7 @@ const ExperienceEditor = () => {
                         <Input
                           value={highlight}
                           onChange={(e) => updateHighlight(exp.id, idx, e.target.value)}
-                          placeholder={`Highlight ${idx + 1}`}
+                          placeholder={`Bullet point ${idx + 1}`}
                         />
                         <Button
                           variant="ghost"
@@ -488,9 +476,11 @@ const ExperienceEditor = () => {
           ))}
 
           {experiences.length === 0 && (
-            <div className="text-center py-12 text-muted-foreground">
-              No experiences yet. Click "Add Experience" to create one.
-            </div>
+            <Card>
+              <CardContent className="py-8 text-center text-muted-foreground">
+                No experiences yet. Click "Add Experience" to create one.
+              </CardContent>
+            </Card>
           )}
         </div>
       </div>

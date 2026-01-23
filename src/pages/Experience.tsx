@@ -1,31 +1,20 @@
 import { useEffect, useState } from "react";
 import { Layout } from "@/components/layout/Layout";
-import { Briefcase, FileSpreadsheet, GraduationCap, TrendingUp, ArrowRight, Zap, PenTool, Target, Lightbulb, Users } from "lucide-react";
+import { ArrowRight, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
 
-const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-  Briefcase,
-  FileSpreadsheet,
-  GraduationCap,
-  TrendingUp,
-  PenTool,
-  Target,
-  Lightbulb,
-  Users,
-  Zap,
-};
-
 interface Experience {
   id: string;
   title: string;
+  title_link: string | null;
   company: string | null;
   description: string | null;
   highlights: string[];
-  icon: string;
-  accent: string;
+  start_date: string | null;
+  end_date: string | null;
   is_current: boolean;
 }
 
@@ -41,6 +30,60 @@ interface PageContent {
   cta_button_link: string | null;
   cta_visible: boolean;
 }
+
+// Parse markdown-style links: [text](url) -> <a href="url">text</a>
+const parseLinks = (text: string): React.ReactNode => {
+  const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match;
+
+  while ((match = linkRegex.exec(text)) !== null) {
+    // Add text before the link
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+    // Add the link
+    parts.push(
+      <a
+        key={match.index}
+        href={match[2]}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-primary hover:underline"
+      >
+        {match[1]}
+      </a>
+    );
+    lastIndex = match.index + match[0].length;
+  }
+
+  // Add remaining text
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+
+  return parts.length > 0 ? parts : text;
+};
+
+// Format date to "Feb 2024" format
+const formatDate = (dateStr: string | null): string => {
+  if (!dateStr) return "";
+  const date = new Date(dateStr);
+  return date.toLocaleDateString("en-US", { month: "short", year: "numeric" });
+};
+
+// Get date range string
+const getDateRange = (startDate: string | null, endDate: string | null, isCurrent: boolean): string => {
+  const start = formatDate(startDate);
+  const end = isCurrent ? "Present" : formatDate(endDate);
+  
+  if (!start && !end) return "";
+  if (!start) return end;
+  if (!end) return start;
+  
+  return `${start} – ${end}`;
+};
 
 export default function Experience() {
   const [experiences, setExperiences] = useState<Experience[]>([]);
@@ -150,95 +193,73 @@ export default function Experience() {
         </div>
       </section>
 
-      {/* Experience Grid */}
+      {/* Experience Cards */}
       <section className="section-padding">
         <div className="container-wide">
           <div className="grid gap-6 md:gap-8">
             {experiences.map((exp, index) => {
-              const IconComponent = iconMap[exp.icon] || Briefcase;
-              const isAccent = exp.accent === "primary";
+              const dateRange = getDateRange(exp.start_date, exp.end_date, exp.is_current);
 
               return (
                 <div
                   key={exp.id}
-                  className={`group relative rounded-lg border transition-all duration-300 hover:shadow-card overflow-hidden animate-fade-up ${
-                    isAccent 
-                      ? "bg-primary text-primary-foreground border-primary" 
-                      : "bg-card border-border hover:border-primary/30"
-                  }`}
+                  className="group bg-card rounded-xl border border-border p-6 md:p-8 lg:p-10 shadow-sm hover:shadow-card transition-shadow duration-300 animate-fade-up"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
-                  {/* Current Focus badge */}
-                  {exp.is_current && (
-                    <div className="absolute top-4 right-4 md:top-6 md:right-6">
-                      <span className="inline-flex items-center px-3 py-1 bg-accent text-accent-foreground text-xs font-bold rounded-full uppercase tracking-wider">
-                        Current Focus
-                      </span>
-                    </div>
-                  )}
-                  
-                  <div className="p-6 md:p-8 lg:p-10">
-                    <div className="flex flex-col md:flex-row md:items-start gap-6">
-                      {/* Icon */}
-                      <div className={`flex-shrink-0 w-14 h-14 rounded-lg flex items-center justify-center ${
-                        isAccent 
-                          ? "bg-primary-foreground/20" 
-                          : "bg-primary/10"
-                      }`}>
-                        <IconComponent className={`w-7 h-7 ${isAccent ? "text-primary-foreground" : "text-primary"}`} />
-                      </div>
-                      
-                      {/* Content */}
-                      <div className="flex-1">
-                        <div className="mb-4">
-                          {exp.company && (
-                            <p className={`text-sm font-medium mb-1 ${
-                              isAccent ? "text-primary-foreground/70" : "text-muted-foreground"
-                            }`}>
-                              {exp.company}
-                            </p>
-                          )}
-                          <h2 className={`text-2xl md:text-3xl font-display ${
-                            isAccent ? "text-primary-foreground" : "text-foreground"
-                          }`}>
+                  <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] lg:grid-cols-[320px_1fr] gap-6 md:gap-10">
+                    {/* Left Column - Date, Title, Company */}
+                    <div className="space-y-2">
+                      {dateRange && (
+                        <p className="text-sm text-muted-foreground">
+                          {dateRange}
+                        </p>
+                      )}
+                      <h2 className="text-2xl md:text-3xl font-display text-foreground leading-tight">
+                        {exp.title_link ? (
+                          <a
+                            href={exp.title_link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="hover:text-primary transition-colors"
+                          >
                             {exp.title}
-                          </h2>
-                        </div>
-                        
-                        {exp.description && (
-                          <p className={`text-base md:text-lg mb-6 leading-relaxed ${
-                            isAccent ? "text-primary-foreground/90" : "text-muted-foreground"
-                          }`}>
-                            {exp.description}
-                          </p>
+                          </a>
+                        ) : (
+                          exp.title
                         )}
-                        
-                        {/* Highlights */}
-                        {exp.highlights && exp.highlights.length > 0 && (
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            {exp.highlights.map((highlight, idx) => (
-                              <div 
-                                key={idx}
-                                className={`flex items-center gap-2 text-sm ${
-                                  isAccent ? "text-primary-foreground/80" : "text-foreground"
-                                }`}
-                              >
-                                <div className={`w-1.5 h-1.5 rounded-full ${
-                                  isAccent ? "bg-primary-foreground" : "bg-accent"
-                                }`} />
-                                {highlight}
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
+                      </h2>
+                      {exp.company && (
+                        <p className="text-base text-muted-foreground">
+                          {exp.company}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Right Column - Bullet Points */}
+                    <div className="space-y-4">
+                      {exp.highlights && exp.highlights.length > 0 && (
+                        <ul className="space-y-3">
+                          {exp.highlights.map((highlight, idx) => (
+                            <li 
+                              key={idx}
+                              className="flex items-start gap-3 text-foreground"
+                            >
+                              <span className="mt-2 w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
+                              <span className="text-base leading-relaxed">
+                                {parseLinks(highlight)}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                      
+                      {exp.description && !exp.highlights?.length && (
+                        <p className="text-base text-muted-foreground leading-relaxed">
+                          {parseLinks(exp.description)}
+                        </p>
+                      )}
                     </div>
                   </div>
-                  
-                  {/* Decorative bottom border on hover */}
-                  <div className={`absolute bottom-0 left-0 right-0 h-1 transition-transform duration-300 origin-left scale-x-0 group-hover:scale-x-100 ${
-                    isAccent ? "bg-primary-foreground/30" : "bg-accent"
-                  }`} />
                 </div>
               );
             })}
