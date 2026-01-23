@@ -388,7 +388,7 @@ const BlogManagement = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-display">Blog Management</h1>
+          <h1 className="text-3xl font-admin-heading font-bold">Blog Management</h1>
           <p className="text-muted-foreground mt-1">
             Content command center • {posts.length} posts
           </p>

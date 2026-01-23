@@ -126,7 +126,7 @@ const ServicesEditor = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-display text-foreground">Services</h1>
+          <h1 className="text-3xl font-admin-heading font-bold text-foreground">Services</h1>
           <p className="text-muted-foreground mt-1">Manage your services/skills</p>
         </div>
         <Button onClick={handleAddNew}>

@@ -47,7 +47,7 @@ const ContactsList = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-display">Messages</h1>
+        <h1 className="text-3xl font-admin-heading font-bold">Messages</h1>
         <p className="text-muted-foreground mt-1">Contact form submissions</p>
       </div>
 

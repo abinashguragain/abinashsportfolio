@@ -179,7 +179,7 @@ const GoogleSheetsEditor = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold flex items-center gap-2">
+        <h1 className="text-2xl font-admin-heading font-bold flex items-center gap-2">
           <FileSpreadsheet className="h-6 w-6" />
           Google Sheets Integration
         </h1>

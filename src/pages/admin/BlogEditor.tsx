@@ -240,7 +240,7 @@ const BlogEditor = () => {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back
           </Button>
-          <h1 className="text-2xl font-display">{isNew ? "New Post" : "Edit Post"}</h1>
+          <h1 className="text-2xl font-admin-heading font-bold">{isNew ? "New Post" : "Edit Post"}</h1>
         </div>
         <div className="flex items-center gap-4">
           <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v })}>

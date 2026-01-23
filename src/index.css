@@ -178,15 +178,15 @@
 }
 
 .ProseMirror h1 {
-  @apply text-3xl font-display font-bold mt-8 mb-4;
+  @apply text-3xl font-blog-heading font-extrabold mt-8 mb-4;
 }
 
 .ProseMirror h2 {
-  @apply text-2xl font-display font-semibold mt-6 mb-3;
+  @apply text-2xl font-blog-heading font-bold mt-6 mb-3;
 }
 
 .ProseMirror h3 {
-  @apply text-xl font-display font-semibold mt-5 mb-2;
+  @apply text-xl font-blog-heading font-bold mt-5 mb-2;
 }
 
 .ProseMirror p {
@@ -235,15 +235,15 @@
 
 /* Blog Content Styles */
 .blog-content h1 {
-  @apply text-3xl font-display font-bold mt-8 mb-4 text-foreground;
+  @apply text-3xl font-blog-heading font-extrabold mt-8 mb-4 text-foreground;
 }
 
 .blog-content h2 {
-  @apply text-2xl font-display font-semibold mt-6 mb-3 text-foreground;
+  @apply text-2xl font-blog-heading font-bold mt-6 mb-3 text-foreground;
 }
 
 .blog-content h3 {
-  @apply text-xl font-display font-semibold mt-5 mb-2 text-foreground;
+  @apply text-xl font-blog-heading font-bold mt-5 mb-2 text-foreground;
 }
 
 .blog-content p {

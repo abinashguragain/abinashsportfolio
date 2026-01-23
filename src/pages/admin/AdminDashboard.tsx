@@ -76,7 +76,7 @@ const AdminDashboard = () => {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-display text-foreground">Dashboard</h1>
+        <h1 className="text-3xl font-admin-heading font-bold text-foreground">Dashboard</h1>
         <p className="text-muted-foreground mt-1">Welcome to your admin panel</p>
       </div>
 
@@ -105,7 +105,7 @@ const AdminDashboard = () => {
 
       {/* Analytics Section */}
       <div className="space-y-4">
-        <h2 className="text-2xl font-display text-foreground">Site Analytics</h2>
+        <h2 className="text-2xl font-admin-heading font-bold text-foreground">Site Analytics</h2>
         <AnalyticsWidgets />
       </div>
 

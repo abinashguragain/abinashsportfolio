@@ -103,7 +103,7 @@ const HeroEditor = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-display text-foreground">Hero Section</h1>
+          <h1 className="text-3xl font-admin-heading font-bold text-foreground">Hero Section</h1>
           <p className="text-muted-foreground mt-1">Edit your homepage hero</p>
         </div>
         <Button onClick={handleSave} disabled={saving}>

@@ -56,7 +56,7 @@ const BlogList = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-display">Blog Posts</h1>
+          <h1 className="text-3xl font-admin-heading font-bold">Blog Posts</h1>
           <p className="text-muted-foreground mt-1">Manage your articles</p>
         </div>
         <Button asChild>
