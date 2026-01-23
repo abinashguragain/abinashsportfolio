@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Quote, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { renderTextWithLinks } from "@/lib/parseLinks";
 
 interface Testimonial {
   id: string;
@@ -96,9 +97,10 @@ export const TestimonialsSection = () => {
               
               {/* Content */}
               <div className="space-y-4">
-                <p className="text-foreground leading-relaxed">
-                  "{testimonial.content}"
-                </p>
+                <p 
+                  className="text-foreground leading-relaxed"
+                  dangerouslySetInnerHTML={renderTextWithLinks(`"${testimonial.content}"`)}
+                />
                 
                 <div className="pt-4 border-t border-border">
                   <p className="font-semibold text-foreground">{testimonial.name}</p>

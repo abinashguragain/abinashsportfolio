@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAnalytics } from "@/hooks/use-analytics";
 import avatarImage from "@/assets/avatar.png";
+import { renderTextWithLinks } from "@/lib/parseLinks";
 
 interface HeroContent {
   title: string;
@@ -81,9 +82,11 @@ export const HeroSection = () => {
               </h1>
             </div>
             
-            <p className="text-lg md:text-xl text-muted-foreground max-w-lg mx-auto lg:mx-0 animate-fade-up opacity-0" style={{ animationDelay: '300ms', animationFillMode: 'forwards' }}>
-              {description}
-            </p>
+            <p 
+              className="text-lg md:text-xl text-muted-foreground max-w-lg mx-auto lg:mx-0 animate-fade-up opacity-0" 
+              style={{ animationDelay: '300ms', animationFillMode: 'forwards' }}
+              dangerouslySetInnerHTML={renderTextWithLinks(description)}
+            />
             
             <div className="flex flex-row justify-center lg:justify-start gap-3 animate-fade-up opacity-0" style={{ animationDelay: '400ms', animationFillMode: 'forwards' }}>
               <Button variant="hero" size="sm" asChild onClick={() => trackCtaClick("hero_cta", ctaLink)}>

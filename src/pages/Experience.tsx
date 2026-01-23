@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { Layout } from "@/components/layout/Layout";
-import { ArrowRight, Zap } from "lucide-react";
+import { ArrowRight, Zap, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2 } from "lucide-react";
+import { SEOHead } from "@/components/SEOHead";
 
 interface Experience {
   id: string;
@@ -164,6 +164,10 @@ export default function Experience() {
 
   return (
     <Layout>
+      <SEOHead 
+        title="Experience" 
+        description={pageContent?.subtitle || "A blend of systematic thinking and creative problem-solving."}
+      />
       {/* Hero Section */}
       <section className="pt-32 pb-16 md:pt-40 md:pb-24 bg-gradient-hero relative overflow-hidden">
         {/* Metal-inspired background pattern */}

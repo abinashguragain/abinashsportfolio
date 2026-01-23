@@ -253,8 +253,11 @@ export type Database = {
           custom_font: string | null
           excerpt: string | null
           featured_image: string | null
+          featured_image_alt: string | null
           id: string
           is_featured: boolean | null
+          meta_description: string | null
+          meta_title: string | null
           published_at: string | null
           read_time: number | null
           slug: string
@@ -269,8 +272,11 @@ export type Database = {
           custom_font?: string | null
           excerpt?: string | null
           featured_image?: string | null
+          featured_image_alt?: string | null
           id?: string
           is_featured?: boolean | null
+          meta_description?: string | null
+          meta_title?: string | null
           published_at?: string | null
           read_time?: number | null
           slug: string
@@ -285,8 +291,11 @@ export type Database = {
           custom_font?: string | null
           excerpt?: string | null
           featured_image?: string | null
+          featured_image_alt?: string | null
           id?: string
           is_featured?: boolean | null
+          meta_description?: string | null
+          meta_title?: string | null
           published_at?: string | null
           read_time?: number | null
           slug?: string
@@ -685,6 +694,30 @@ export type Database = {
           id?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      seo_settings: {
+        Row: {
+          default_og_image: string | null
+          id: string
+          site_description: string | null
+          site_title: string | null
+          updated_at: string
+        }
+        Insert: {
+          default_og_image?: string | null
+          id?: string
+          site_description?: string | null
+          site_title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          default_og_image?: string | null
+          id?: string
+          site_description?: string | null
+          site_title?: string | null
+          updated_at?: string
         }
         Relationships: []
       }

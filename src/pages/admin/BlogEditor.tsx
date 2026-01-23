@@ -48,11 +48,14 @@ const BlogEditor = () => {
     excerpt: "",
     content: "",
     featured_image: "",
+    featured_image_alt: "",
     status: "draft",
     is_featured: false,
     read_time: 5,
     author_id: "",
     custom_font: "",
+    meta_title: "",
+    meta_description: "",
   });
 
   const googleFonts = [
@@ -111,11 +114,14 @@ const BlogEditor = () => {
       excerpt: postRes.data.excerpt || "",
       content: postRes.data.content || "",
       featured_image: postRes.data.featured_image || "",
+      featured_image_alt: postRes.data.featured_image_alt || "",
       status: postRes.data.status || "draft",
       is_featured: postRes.data.is_featured || false,
       read_time: postRes.data.read_time || 5,
       author_id: postRes.data.author_id || "",
       custom_font: postRes.data.custom_font || "",
+      meta_title: postRes.data.meta_title || "",
+      meta_description: postRes.data.meta_description || "",
     });
 
     if (categoriesRes.data) {
@@ -176,12 +182,15 @@ const BlogEditor = () => {
       excerpt: form.excerpt,
       content: form.content,
       featured_image: form.featured_image,
+      featured_image_alt: form.featured_image_alt || null,
       status: form.status,
       is_featured: form.is_featured,
       read_time: form.read_time,
       author_id: form.author_id && form.author_id.length > 0 ? form.author_id : null,
       published_at: form.status === "published" ? new Date().toISOString() : null,
       custom_font: form.custom_font || null,
+      meta_title: form.meta_title || null,
+      meta_description: form.meta_description || null,
     };
 
     let postId = id;
@@ -431,6 +440,53 @@ const BlogEditor = () => {
               onUpload={(file) => uploadImage(file, "blog")}
               uploading={uploading}
             />
+            <div className="space-y-2">
+              <Label htmlFor="featured_image_alt">Image Alt Text (SEO)</Label>
+              <Input
+                id="featured_image_alt"
+                value={form.featured_image_alt}
+                onChange={(e) => setForm({ ...form, featured_image_alt: e.target.value })}
+                placeholder="Describe the image for accessibility and SEO"
+              />
+              <p className="text-xs text-muted-foreground">
+                Helps with accessibility and appears in search/social previews.
+              </p>
+            </div>
+            
+            <div className="border-t border-border pt-4 mt-4">
+              <h3 className="font-semibold mb-4">SEO Settings</h3>
+              
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="meta_title">Meta Title</Label>
+                  <Input
+                    id="meta_title"
+                    value={form.meta_title}
+                    onChange={(e) => setForm({ ...form, meta_title: e.target.value })}
+                    placeholder={form.title || "Override the page title for SEO"}
+                    maxLength={60}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {form.meta_title.length}/60 characters • Leave empty to use post title
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="meta_description">Meta Description</Label>
+                  <Textarea
+                    id="meta_description"
+                    value={form.meta_description}
+                    onChange={(e) => setForm({ ...form, meta_description: e.target.value })}
+                    placeholder={form.excerpt || "Override the description for search results"}
+                    rows={3}
+                    maxLength={160}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {form.meta_description.length}/160 characters • Leave empty to use excerpt
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAnalytics } from "@/hooks/use-analytics";
+import { SEOHead } from "@/components/SEOHead";
 
 interface Author {
   id: string;
@@ -41,6 +42,9 @@ interface BlogPostData {
   authors: Author | null;
   blog_post_categories: PostCategory[];
   custom_font: string | null;
+  meta_title: string | null;
+  meta_description: string | null;
+  featured_image_alt: string | null;
 }
 
 interface RelatedPost {
@@ -161,6 +165,20 @@ const BlogPost = () => {
 
   return (
     <Layout>
+      {/* SEO Meta Tags */}
+      <SEOHead
+        title={post.meta_title || post.title}
+        description={post.meta_description || post.excerpt || ""}
+        image={post.featured_image || undefined}
+        imageAlt={post.featured_image_alt || post.title}
+        type="article"
+        article={{
+          publishedTime: post.published_at || undefined,
+          modifiedTime: post.updated_at,
+          author: post.authors?.name,
+        }}
+      />
+      
       {/* Load custom font if specified */}
       {post.custom_font && (
         <link
@@ -252,7 +270,8 @@ const BlogPost = () => {
           <div className="container-narrow py-8">
             <img
               src={post.featured_image}
-              alt={post.title}
+              alt={post.featured_image_alt || post.title}
+              title={post.featured_image_alt || post.title}
               className="w-full h-auto rounded-xl border border-border"
             />
           </div>
