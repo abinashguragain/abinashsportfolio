@@ -179,6 +179,35 @@ const BlogPost = () => {
         }}
       />
       
+      {/* JSON-LD Structured Data for Articles */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Article",
+            headline: post.title,
+            description: post.excerpt || "",
+            image: post.featured_image || undefined,
+            datePublished: post.published_at || undefined,
+            dateModified: post.updated_at,
+            author: post.authors ? {
+              "@type": "Person",
+              name: post.authors.name,
+              url: post.authors.bio_link || undefined,
+            } : undefined,
+            publisher: {
+              "@type": "Organization",
+              name: document.title.split(" | ").pop() || "Website",
+            },
+            mainEntityOfPage: {
+              "@type": "WebPage",
+              "@id": window.location.href,
+            },
+          }),
+        }}
+      />
+      
       {/* Load custom font if specified */}
       {post.custom_font && (
         <link
@@ -239,21 +268,25 @@ const BlogPost = () => {
             {post.published_at && (
               <span>
                 <span className="font-medium text-foreground">Published:</span>{" "}
-                {new Date(post.published_at).toLocaleDateString("en-US", {
-                  month: "long",
-                  day: "numeric",
-                  year: "numeric",
-                })}
+                <time dateTime={post.published_at}>
+                  {new Date(post.published_at).toLocaleDateString("en-US", {
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </time>
               </span>
             )}
-            {post.updated_at && post.updated_at !== post.published_at && (
+            {post.updated_at && new Date(post.updated_at).getTime() > new Date(post.published_at || 0).getTime() + 60000 && (
               <span>
-                <span className="font-medium text-foreground">Last updated:</span>{" "}
-                {new Date(post.updated_at).toLocaleDateString("en-US", {
-                  month: "long",
-                  day: "numeric",
-                  year: "numeric",
-                })}
+                <span className="font-medium text-foreground">Updated:</span>{" "}
+                <time dateTime={post.updated_at}>
+                  {new Date(post.updated_at).toLocaleDateString("en-US", {
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </time>
               </span>
             )}
             <span className="flex items-center gap-1">
