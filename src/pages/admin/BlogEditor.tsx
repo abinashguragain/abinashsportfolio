@@ -57,6 +57,9 @@ const BlogEditor = () => {
     meta_title: "",
     meta_description: "",
   });
+  
+  // Track the original published_at date to preserve it on updates
+  const [originalPublishedAt, setOriginalPublishedAt] = useState<string | null>(null);
 
   const googleFonts = [
     "Inter", "Roboto", "Open Sans", "Lato", "Montserrat", "Poppins",
@@ -123,6 +126,9 @@ const BlogEditor = () => {
       meta_title: postRes.data.meta_title || "",
       meta_description: postRes.data.meta_description || "",
     });
+    
+    // Store the original published_at date to preserve it on updates
+    setOriginalPublishedAt(postRes.data.published_at);
 
     if (categoriesRes.data) {
       setSelectedCategories(
@@ -176,6 +182,16 @@ const BlogEditor = () => {
 
     setSaving(true);
 
+    // Determine published_at value:
+    // - If publishing for the first time (status changed to published and no existing published_at), set to now
+    // - If already published, preserve the original published_at date
+    // - If status is draft, keep it null
+    let publishedAtValue: string | null = null;
+    if (form.status === "published") {
+      // Preserve original published_at if it exists, otherwise set to now (first publish)
+      publishedAtValue = originalPublishedAt || new Date().toISOString();
+    }
+
     const postData = {
       title: form.title,
       slug: form.slug,
@@ -187,7 +203,7 @@ const BlogEditor = () => {
       is_featured: form.is_featured,
       read_time: form.read_time,
       author_id: form.author_id && form.author_id.length > 0 ? form.author_id : null,
-      published_at: form.status === "published" ? new Date().toISOString() : null,
+      published_at: publishedAtValue,
       custom_font: form.custom_font || null,
       meta_title: form.meta_title || null,
       meta_description: form.meta_description || null,
