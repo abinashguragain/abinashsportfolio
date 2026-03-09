@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/admin/ProtectedRoute";
 import ThirdPartyScripts from "./components/ThirdPartyScripts";
@@ -34,6 +34,11 @@ import ActivityLogs from "./pages/admin/ActivityLogs";
 import SEOEditor from "./pages/admin/SEOEditor";
 
 const queryClient = new QueryClient();
+
+const SitemapRedirect = () => {
+  window.location.href = `https://hzmljxtklixcisasjqwg.supabase.co/functions/v1/sitemap?baseUrl=${window.location.origin}`;
+  return null;
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -73,6 +78,8 @@ const App = () => (
               <Route path="seo" element={<SEOEditor />} />
             </Route>
             
+            
+            <Route path="/sitemap.xml" element={<SitemapRedirect />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

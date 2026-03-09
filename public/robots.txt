@@ -1,30 +1,11 @@
 # Robots.txt for abinashsportfolio.lovable.app
-# Generated to allow public crawling while blocking admin routes
-
-User-agent: Googlebot
-Allow: /
-Disallow: /admin
-Disallow: /admin/
-
-User-agent: Bingbot
-Allow: /
-Disallow: /admin
-Disallow: /admin/
-
-User-agent: Twitterbot
-Allow: /
-Disallow: /admin
-Disallow: /admin/
-
-User-agent: facebookexternalhit
-Allow: /
-Disallow: /admin
-Disallow: /admin/
 
 User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /admin/
+Disallow: /auth
+Disallow: /api/
 
-# Sitemap location
+# Sitemap location (dynamic, auto-updates with content changes)
 Sitemap: https://hzmljxtklixcisasjqwg.supabase.co/functions/v1/sitemap?baseUrl=https://abinashsportfolio.lovable.app
