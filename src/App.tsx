@@ -78,6 +78,8 @@ const App = () => (
               <Route path="seo" element={<SEOEditor />} />
             </Route>
             
+            
+            <Route path="/sitemap.xml" element={<SitemapRedirect />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
