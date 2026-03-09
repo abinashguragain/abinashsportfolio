@@ -35,6 +35,11 @@ import SEOEditor from "./pages/admin/SEOEditor";
 
 const queryClient = new QueryClient();
 
+const SitemapRedirect = () => {
+  window.location.href = `https://hzmljxtklixcisasjqwg.supabase.co/functions/v1/sitemap?baseUrl=${window.location.origin}`;
+  return null;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
