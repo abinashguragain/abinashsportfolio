@@ -73,7 +73,7 @@ export const Footer = () => {
         supabase.from("footer_content").select("*").maybeSingle(),
         supabase.from("footer_links").select("*").eq("is_active", true).order("sort_order"),
         supabase.from("social_links").select("*").eq("is_active", true).order("sort_order"),
-        supabase.from("navigation_settings").select("site_name, site_name_accent").maybeSingle(),
+        supabase.from("navigation_settings").select("site_name, site_name_accent, logo_url").maybeSingle(),
       ]);
 
       setFooterContent(contentRes.data);
