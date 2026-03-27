@@ -30,6 +30,7 @@ interface SocialLink {
 interface NavSettings {
   site_name: string;
   site_name_accent: string | null;
+  logo_url: string | null;
 }
 
 // Dynamic icon component
