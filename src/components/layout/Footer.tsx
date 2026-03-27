@@ -30,6 +30,7 @@ interface SocialLink {
 interface NavSettings {
   site_name: string;
   site_name_accent: string | null;
+  logo_url: string | null;
 }
 
 // Dynamic icon component
@@ -72,7 +73,7 @@ export const Footer = () => {
         supabase.from("footer_content").select("*").maybeSingle(),
         supabase.from("footer_links").select("*").eq("is_active", true).order("sort_order"),
         supabase.from("social_links").select("*").eq("is_active", true).order("sort_order"),
-        supabase.from("navigation_settings").select("site_name, site_name_accent").maybeSingle(),
+        supabase.from("navigation_settings").select("site_name, site_name_accent, logo_url").maybeSingle(),
       ]);
 
       setFooterContent(contentRes.data);
@@ -108,9 +109,15 @@ export const Footer = () => {
           <div className="space-y-4">
             <Link 
               to="/" 
-              className="font-display text-2xl tracking-wide text-foreground"
+              className="font-display text-2xl tracking-wide text-foreground flex items-center"
             >
-              {siteName}<span className="text-primary">{siteNameAccent}</span>
+              {navSettings?.logo_url ? (
+                <img src={navSettings.logo_url} alt="Logo" className="h-8 md:h-10" />
+              ) : (
+                <>
+                  {siteName}<span className="text-primary">{siteNameAccent}</span>
+                </>
+              )}
             </Link>
             <p className="text-muted-foreground text-sm max-w-xs">
               {brandDescription}
