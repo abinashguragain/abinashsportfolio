@@ -56,7 +56,7 @@ export const HeroSection = () => {
   const badgeSubtitle = content?.badge_subtitle || "Writing Experience";
 
   return (
-    <section className="relative section-padding bg-gradient-hero overflow-hidden">
+    <section className="relative bg-gradient-hero overflow-hidden pt-28 md:pt-32 pb-16 md:pb-20">
       {/* Decorative elements */}
       <div className="absolute top-20 left-10 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
       <div className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
