@@ -18,6 +18,21 @@ interface NavSettings {
   logo_url: string | null;
 }
 
+interface FooterLink {
+  id: string;
+  label: string;
+  href: string;
+  sort_order: number | null;
+}
+
+interface SocialLink {
+  id: string;
+  platform: string;
+  url: string;
+  icon: string;
+  sort_order: number | null;
+}
+
 // Dynamic icon component
 interface IconProps extends Omit<LucideProps, 'ref'> {
   name: string;
