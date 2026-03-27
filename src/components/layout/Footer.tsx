@@ -12,24 +12,10 @@ interface FooterContent {
   bottom_tagline: string | null;
 }
 
-interface FooterLink {
-  id: string;
-  label: string;
-  href: string;
-  sort_order: number | null;
-}
-
-interface SocialLink {
-  id: string;
-  platform: string;
-  url: string;
-  icon: string;
-  sort_order: number | null;
-}
-
 interface NavSettings {
   site_name: string;
   site_name_accent: string | null;
+  logo_url: string | null;
 }
 
 // Dynamic icon component
