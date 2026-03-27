@@ -56,7 +56,7 @@ export const HeroSection = () => {
   const badgeSubtitle = content?.badge_subtitle || "Writing Experience";
 
   return (
-    <section className="relative section-padding bg-gradient-hero overflow-hidden">
+    <section className="relative bg-gradient-hero overflow-hidden pt-28 md:pt-32 pb-16 md:pb-20">
       {/* Decorative elements */}
       <div className="absolute top-20 left-10 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
       <div className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
@@ -108,11 +108,11 @@ export const HeroSection = () => {
               <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-secondary/30 rounded-2xl blur-2xl transform scale-95" />
               
               {/* Image container */}
-              <div className="relative bg-gradient-to-br from-primary/20 to-secondary/20 p-2 rounded-2xl">
+              <div className="relative p-2 rounded-2xl">
                 <img
                   src={imageUrl}
                   alt="Content Writer - Professional Avatar"
-                  className="w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 rounded-xl object-cover"
+                  className="w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 rounded-xl object-contain"
                 />
               </div>
               
