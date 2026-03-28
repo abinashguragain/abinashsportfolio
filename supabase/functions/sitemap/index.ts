@@ -100,7 +100,8 @@ Deno.serve(async (req) => {
   </url>
   <url>
     <loc>${siteUrl}/contact</loc>
-    <changefreq>yearly</changefreq>
+    <lastmod>${contactLastmod}</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>`;
 
