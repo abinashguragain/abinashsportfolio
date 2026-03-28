@@ -39,6 +39,18 @@ Deno.serve(async (req) => {
       supabase.from("testimonials").select("updated_at").eq("is_active", true).order("updated_at", { ascending: false }).limit(1).maybeSingle(),
     ]);
 
+    // Helper: if a date is older than 10 days, use today's date instead
+    const TEN_DAYS_MS = 10 * 24 * 60 * 60 * 1000;
+    const now = Date.now();
+    const freshDate = (dateStr: string | null | undefined): string => {
+      if (!dateStr) return new Date().toISOString().split("T")[0];
+      const ts = new Date(dateStr).getTime();
+      if (now - ts > TEN_DAYS_MS) {
+        return new Date().toISOString().split("T")[0];
+      }
+      return new Date(ts).toISOString().split("T")[0];
+    };
+
     // Calculate lastmod for homepage (most recent of all homepage content)
     const homepageUpdates = [
       heroRes.data?.updated_at,
@@ -47,19 +59,22 @@ Deno.serve(async (req) => {
       testimonialsRes.data?.updated_at,
     ].filter(Boolean).map(d => new Date(d!).getTime());
     
-    const homepageLastmod = homepageUpdates.length > 0 
-      ? new Date(Math.max(...homepageUpdates)).toISOString().split("T")[0]
-      : new Date().toISOString().split("T")[0];
+    const rawHomepageLastmod = homepageUpdates.length > 0 
+      ? new Date(Math.max(...homepageUpdates)).toISOString()
+      : null;
+    const homepageLastmod = freshDate(rawHomepageLastmod);
 
     // Calculate lastmod for experience page
-    const experienceLastmod = experiencesRes.data?.updated_at 
-      ? new Date(experiencesRes.data.updated_at).toISOString().split("T")[0]
-      : new Date().toISOString().split("T")[0];
+    const experienceLastmod = freshDate(experiencesRes.data?.updated_at);
 
     // Calculate lastmod for blog listing (most recent post update)
-    const blogListingLastmod = posts && posts.length > 0
-      ? new Date(Math.max(...posts.map(p => new Date(p.updated_at).getTime()))).toISOString().split("T")[0]
-      : new Date().toISOString().split("T")[0];
+    const rawBlogListingLastmod = posts && posts.length > 0
+      ? new Date(Math.max(...posts.map(p => new Date(p.updated_at).getTime()))).toISOString()
+      : null;
+    const blogListingLastmod = freshDate(rawBlogListingLastmod);
+
+    // Contact page: always refresh every 10 days
+    const contactLastmod = new Date().toISOString().split("T")[0];
 
     // Build sitemap XML
     let sitemap = `<?xml version="1.0" encoding="UTF-8"?>
@@ -85,7 +100,8 @@ Deno.serve(async (req) => {
   </url>
   <url>
     <loc>${siteUrl}/contact</loc>
-    <changefreq>yearly</changefreq>
+    <lastmod>${contactLastmod}</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>`;
 
