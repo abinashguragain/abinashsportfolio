@@ -17,6 +17,7 @@ interface ImageCropperProps {
   imageSrc: string;
   onCropComplete: (croppedBlob: Blob) => void;
   aspectRatio?: number;
+  outputMimeType?: string;
 }
 
 function centerAspectCrop(
@@ -56,6 +57,7 @@ export const ImageCropper = ({
   imageSrc,
   onCropComplete,
   aspectRatio,
+  outputMimeType = "image/jpeg",
 }: ImageCropperProps) => {
   const [crop, setCrop] = useState<Crop>();
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
@@ -106,8 +108,8 @@ export const ImageCropper = ({
     return new Promise((resolve) => {
       canvas.toBlob(
         (blob) => resolve(blob),
-        "image/jpeg",
-        0.95
+        outputMimeType,
+        outputMimeType === "image/jpeg" || outputMimeType === "image/webp" ? 0.95 : undefined
       );
     });
   };
