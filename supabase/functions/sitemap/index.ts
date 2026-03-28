@@ -17,7 +17,7 @@ Deno.serve(async (req) => {
 
     // Get the site URL from the request or use a default
     const url = new URL(req.url);
-    const siteUrl = url.searchParams.get("baseUrl") || "https://abinashsportfolio.lovable.app";
+    const siteUrl = url.searchParams.get("baseUrl") || "https://abinashg.com.np";
 
     // Fetch all published blog posts with their updated_at timestamps
     const { data: posts, error: postsError } = await supabase
