@@ -49,6 +49,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <ThirdPartyScripts />
+          <DynamicFavicon />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/experience" element={<Experience />} />
