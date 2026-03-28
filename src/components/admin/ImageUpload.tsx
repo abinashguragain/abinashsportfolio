@@ -26,6 +26,14 @@ export const ImageUpload = ({
   const [pendingImage, setPendingImage] = useState<string | null>(null);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
 
+  const getOutputMimeType = (file?: File | null) => {
+    if (!file?.type) return "image/jpeg";
+    if (file.type === "image/png" || file.type === "image/webp" || file.type === "image/gif") {
+      return file.type;
+    }
+    return "image/jpeg";
+  };
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -55,8 +63,10 @@ export const ImageUpload = ({
 
   const handleCropComplete = async (croppedBlob: Blob) => {
     // Convert blob to file for upload
-    const fileName = pendingFile?.name || "cropped-image.jpg";
-    const croppedFile = new File([croppedBlob], fileName, { type: "image/jpeg" });
+    const mimeType = getOutputMimeType(pendingFile);
+    const ext = mimeType === "image/png" ? "png" : mimeType === "image/webp" ? "webp" : mimeType === "image/gif" ? "gif" : "jpg";
+    const fileName = pendingFile?.name || `cropped-image.${ext}`;
+    const croppedFile = new File([croppedBlob], fileName, { type: mimeType });
     
     const url = await onUpload(croppedFile);
     if (url) {
@@ -144,6 +154,7 @@ export const ImageUpload = ({
           onOpenChange={setCropperOpen}
           imageSrc={pendingImage}
           onCropComplete={handleCropComplete}
+          outputMimeType={getOutputMimeType(pendingFile)}
         />
       )}
     </div>
