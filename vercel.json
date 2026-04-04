@@ -1,5 +1,9 @@
 {
   "rewrites": [
+    {
+      "source": "/sitemap.xml",
+      "destination": "https://hzmljxtklixcisasjqwg.supabase.co/functions/v1/sitemap?baseUrl=https://abinashg.com.np"
+    },
     { "source": "/(.*)", "destination": "/" }
   ]
 }
