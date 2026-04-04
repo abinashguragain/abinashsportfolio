@@ -95,9 +95,6 @@ export const Footer = () => {
   }
 
   const brandDescription = footerContent?.brand_description || "Content writer & storyteller. Crafting words that connect, engage, and inspire action.";
-  const copyrightText = (footerContent?.copyright_text || "© {year} Your Name. All rights reserved.")
-    .replace("{year}", new Date().getFullYear().toString());
-  const bottomTagline = footerContent?.bottom_tagline || "Built with passion & coffee ☕";
   const siteName = navSettings?.site_name || "YOUR";
   const siteNameAccent = navSettings?.site_name_accent || "NAME";
 
@@ -159,16 +156,6 @@ export const Footer = () => {
               ))}
             </div>
           </div>
-        </div>
-
-        {/* Bottom */}
-        <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-muted-foreground">
-            {copyrightText}
-          </p>
-          <p className="text-sm text-muted-foreground">
-            {bottomTagline}
-          </p>
         </div>
       </div>
     </footer>
