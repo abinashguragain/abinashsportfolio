@@ -7,5 +7,5 @@ Disallow: /admin/
 Disallow: /auth
 Disallow: /api/
 
-# Sitemap location (dynamic, auto-updates with content changes)
-Sitemap: https://hzmljxtklixcisasjqwg.supabase.co/functions/v1/sitemap?baseUrl=https://abinashg.com.np
+# Sitemap location
+Sitemap: https://abinashg.com.np/sitemap.xml
