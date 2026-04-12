@@ -7,6 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
+import { useImageUpload } from "@/hooks/use-image-upload";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 import { Loader2, Plus, Trash2, GripVertical } from "lucide-react";
 import {
   Dialog,
@@ -21,6 +23,7 @@ interface Service {
   title: string;
   description: string | null;
   icon: string | null;
+  icon_url: string | null;
   sort_order: number;
   is_active: boolean;
 }
@@ -32,6 +35,7 @@ const ServicesEditor = () => {
   const [editingService, setEditingService] = useState<Service | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
+  const { uploadImage, uploading } = useImageUpload();
 
   useEffect(() => {
     fetchServices();
@@ -57,6 +61,7 @@ const ServicesEditor = () => {
         title: service.title,
         description: service.description,
         icon: service.icon,
+        icon_url: service.icon_url,
         sort_order: service.sort_order,
         is_active: service.is_active,
       });
@@ -74,6 +79,7 @@ const ServicesEditor = () => {
           title: service.title,
           description: service.description,
           icon: service.icon,
+          icon_url: service.icon_url,
           is_active: service.is_active,
         })
         .eq("id", service.id);
@@ -108,6 +114,7 @@ const ServicesEditor = () => {
       title: "",
       description: "",
       icon: "",
+      icon_url: null,
       sort_order: services.length,
       is_active: true,
     });
@@ -204,7 +211,18 @@ const ServicesEditor = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label>Icon (Lucide icon name)</Label>
+                <Label>Custom Icon Image</Label>
+                <ImageUpload
+                  value={editingService.icon_url || undefined}
+                  onChange={(url) =>
+                    setEditingService({ ...editingService, icon_url: url })
+                  }
+                  onUpload={(file) => uploadImage(file, "service-icons")}
+                  uploading={uploading}
+                  label="Upload Icon"
+                  enableCrop={true}
+                />
+                <p className="text-xs text-muted-foreground">Or use a Lucide icon name as fallback:</p>
                 <Input
                   value={editingService.icon || ""}
                   onChange={(e) =>
