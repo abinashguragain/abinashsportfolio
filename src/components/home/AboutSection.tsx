@@ -8,6 +8,7 @@ interface Service {
   title: string;
   description: string | null;
   icon: string | null;
+  icon_url: string | null;
 }
 
 const iconMap: Record<string, LucideIcon> = {
@@ -18,10 +19,10 @@ const iconMap: Record<string, LucideIcon> = {
 };
 
 const defaultServices = [
-  { id: "1", title: "Content Writing", description: "Blog posts, articles, and long-form content that educates and engages your audience.", icon: "PenTool" },
-  { id: "2", title: "SEO Copywriting", description: "Search-optimized content that ranks and converts, without sacrificing readability.", icon: "Target" },
-  { id: "3", title: "Brand Storytelling", description: "Compelling narratives that communicate your brand's unique value and vision.", icon: "Sparkles" },
-  { id: "4", title: "Social Content", description: "Engaging posts and threads designed for maximum reach and audience connection.", icon: "Users" },
+  { id: "1", title: "Content Writing", description: "Blog posts, articles, and long-form content that educates and engages your audience.", icon: "PenTool", icon_url: null },
+  { id: "2", title: "SEO Copywriting", description: "Search-optimized content that ranks and converts, without sacrificing readability.", icon: "Target", icon_url: null },
+  { id: "3", title: "Brand Storytelling", description: "Compelling narratives that communicate your brand's unique value and vision.", icon: "Sparkles", icon_url: null },
+  { id: "4", title: "Social Content", description: "Engaging posts and threads designed for maximum reach and audience connection.", icon: "Users", icon_url: null },
 ];
 
 export const AboutSection = () => {
@@ -77,8 +78,12 @@ export const AboutSection = () => {
                 className="group p-6 bg-card rounded-xl border border-border card-hover"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
-                <div className="w-12 h-12 rounded-lg bg-accent flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
-                  <IconComponent size={24} className="text-accent-foreground group-hover:text-primary-foreground" />
+                <div className="w-12 h-12 rounded-lg bg-accent flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300 overflow-hidden">
+                  {service.icon_url ? (
+                    <img src={service.icon_url} alt={service.title} className="w-6 h-6 object-contain" />
+                  ) : (
+                    <IconComponent size={24} className="text-accent-foreground group-hover:text-primary-foreground" />
+                  )}
                 </div>
                 <h3 className="font-display text-xl text-foreground mb-2">{service.title}</h3>
                 <p 

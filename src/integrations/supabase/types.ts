@@ -725,6 +725,7 @@ export type Database = {
         Row: {
           description: string | null
           icon: string | null
+          icon_url: string | null
           id: string
           is_active: boolean | null
           sort_order: number | null
@@ -734,6 +735,7 @@ export type Database = {
         Insert: {
           description?: string | null
           icon?: string | null
+          icon_url?: string | null
           id?: string
           is_active?: boolean | null
           sort_order?: number | null
@@ -743,6 +745,7 @@ export type Database = {
         Update: {
           description?: string | null
           icon?: string | null
+          icon_url?: string | null
           id?: string
           is_active?: boolean | null
           sort_order?: number | null
