@@ -80,7 +80,7 @@ export const AboutSection = () => {
               >
                 <div className="w-12 h-12 rounded-lg bg-accent flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300 overflow-hidden">
                   {service.icon_url ? (
-                    <img src={service.icon_url} alt={service.title} className="w-6 h-6 object-contain" />
+                    <img src={service.icon_url} alt={service.title} className="w-full h-full object-cover" />
                   ) : (
                     <IconComponent size={24} className="text-accent-foreground group-hover:text-primary-foreground" />
                   )}
