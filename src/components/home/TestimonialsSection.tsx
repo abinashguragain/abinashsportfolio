@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Quote, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { renderTextWithLinks } from "@/lib/parseLinks";
+import { InfiniteScrollRow } from "./InfiniteScrollRow";
 
 interface Testimonial {
   id: string;
@@ -71,6 +72,31 @@ export const TestimonialsSection = () => {
     );
   }
 
+  const testimonialCards = testimonials.map((testimonial) => (
+    <div
+      key={testimonial.id}
+      className="relative p-6 md:p-8 bg-background rounded-xl border border-border card-hover w-[340px] min-w-[340px] flex-shrink-0"
+    >
+      <div className="absolute top-6 right-6 text-primary/20">
+        <Quote size={32} />
+      </div>
+
+      <div className="space-y-4">
+        <p
+          className="text-foreground leading-relaxed"
+          dangerouslySetInnerHTML={renderTextWithLinks(`"${testimonial.content}"`)}
+        />
+
+        <div className="pt-4 border-t border-border">
+          <p className="font-semibold text-foreground">{testimonial.name}</p>
+          <p className="text-sm text-muted-foreground">
+            {testimonial.role}{testimonial.company && `, ${testimonial.company}`}
+          </p>
+        </div>
+      </div>
+    </div>
+  ));
+
   return (
     <section className="section-padding bg-card">
       <div className="container-wide">
@@ -82,36 +108,10 @@ export const TestimonialsSection = () => {
             What clients and collaborators say about working with me.
           </p>
         </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {testimonials.map((testimonial, index) => (
-            <div
-              key={testimonial.id}
-              className="relative p-6 md:p-8 bg-background rounded-xl border border-border card-hover"
-              style={{ animationDelay: `${index * 100}ms` }}
-            >
-              {/* Quote icon */}
-              <div className="absolute top-6 right-6 text-primary/20">
-                <Quote size={32} />
-              </div>
-              
-              {/* Content */}
-              <div className="space-y-4">
-                <p 
-                  className="text-foreground leading-relaxed"
-                  dangerouslySetInnerHTML={renderTextWithLinks(`"${testimonial.content}"`)}
-                />
-                
-                <div className="pt-4 border-t border-border">
-                  <p className="font-semibold text-foreground">{testimonial.name}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {testimonial.role}{testimonial.company && `, ${testimonial.company}`}
-                  </p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+
+        <InfiniteScrollRow speed={25}>
+          {testimonialCards}
+        </InfiniteScrollRow>
       </div>
     </section>
   );
