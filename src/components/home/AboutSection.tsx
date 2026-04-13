@@ -25,26 +25,6 @@ const defaultServices = [
   { id: "4", title: "Social Content", description: "Engaging posts and threads designed for maximum reach and audience connection.", icon: "Users", icon_url: null },
 ];
 
-const ServiceCard = ({ service }: { service: Service }) => {
-  const IconComponent = iconMap[service.icon || "PenTool"] || PenTool;
-  return (
-    <div className="group flex-shrink-0 w-72 p-6 bg-card rounded-xl border border-border card-hover">
-      <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 transition-colors duration-300 overflow-hidden">
-        {service.icon_url ? (
-          <img src={service.icon_url} alt={service.title} className="w-full h-full object-cover" />
-        ) : (
-          <IconComponent size={24} className="text-accent-foreground" />
-        )}
-      </div>
-      <h3 className="font-display text-xl text-foreground mb-2">{service.title}</h3>
-      <p
-        className="text-muted-foreground text-sm"
-        dangerouslySetInnerHTML={renderTextWithLinks(service.description)}
-      />
-    </div>
-  );
-};
-
 export const AboutSection = () => {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
@@ -78,7 +58,7 @@ export const AboutSection = () => {
   }
 
   return (
-    <section className="section-padding bg-background overflow-hidden">
+    <section className="section-padding bg-background">
       <div className="container-wide">
         <div className="text-center max-w-3xl mx-auto mb-12 md:mb-16">
           <h2 className="font-display text-3xl md:text-4xl lg:text-5xl text-foreground mb-4">
@@ -88,16 +68,31 @@ export const AboutSection = () => {
             From strategy to execution, I help brands and businesses communicate with clarity, creativity, and impact.
           </p>
         </div>
-      </div>
-
-      <div className="relative w-full">
-        <div className="flex animate-marquee gap-6 w-max">
-          {services.map((service) => (
-            <ServiceCard key={service.id} service={service} />
-          ))}
-          {services.map((service) => (
-            <ServiceCard key={`dup-${service.id}`} service={service} />
-          ))}
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {services.map((service, index) => {
+            const IconComponent = iconMap[service.icon || "PenTool"] || PenTool;
+            return (
+              <div
+                key={service.id}
+                className="group p-6 bg-card rounded-xl border border-border card-hover"
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 transition-colors duration-300 overflow-hidden">
+                  {service.icon_url ? (
+                    <img src={service.icon_url} alt={service.title} className="w-full h-full object-cover" />
+                  ) : (
+                    <IconComponent size={24} className="text-accent-foreground group-hover:text-primary-foreground" />
+                  )}
+                </div>
+                <h3 className="font-display text-xl text-foreground mb-2">{service.title}</h3>
+                <p 
+                  className="text-muted-foreground text-sm"
+                  dangerouslySetInnerHTML={renderTextWithLinks(service.description)}
+                />
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>
