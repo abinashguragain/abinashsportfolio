@@ -78,7 +78,7 @@ export const AboutSection = () => {
                 className="group p-6 bg-card rounded-xl border border-border card-hover"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
-                <div className="w-12 h-12 rounded-lg border-2 border-accent flex items-center justify-center mb-4 group-hover:border-primary group-hover:text-primary-foreground transition-colors duration-300 overflow-hidden">
+                <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 transition-colors duration-300 overflow-hidden">
                   {service.icon_url ? (
                     <img src={service.icon_url} alt={service.title} className="w-full h-full object-cover" />
                   ) : (
