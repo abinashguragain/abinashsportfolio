@@ -102,11 +102,18 @@ export const TestimonialsSection = () => {
                   dangerouslySetInnerHTML={renderTextWithLinks(`"${testimonial.content}"`)}
                 />
                 
-                <div className="pt-4 border-t border-border">
-                  <p className="font-semibold text-foreground">{testimonial.name}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {testimonial.role}{testimonial.company && `, ${testimonial.company}`}
-                  </p>
+                <div className="pt-4 border-t border-border flex items-center gap-3">
+                  {testimonial.avatar_url && (
+                    <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
+                      <img src={testimonial.avatar_url} alt={testimonial.name} className="w-full h-full object-cover" />
+                    </div>
+                  )}
+                  <div>
+                    <p className="font-semibold text-foreground">{testimonial.name}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {testimonial.role}{testimonial.company && `, ${testimonial.company}`}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
