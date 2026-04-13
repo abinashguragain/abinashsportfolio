@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PenTool, Target, Sparkles, Users, Loader2, LucideIcon } from "lucide-react";
 import { renderTextWithLinks } from "@/lib/parseLinks";
-import { InfiniteScrollRow } from "./InfiniteScrollRow";
 
 interface Service {
   id: string;
@@ -58,29 +57,6 @@ export const AboutSection = () => {
     );
   }
 
-  const serviceCards = services.map((service) => {
-    const IconComponent = iconMap[service.icon || "PenTool"] || PenTool;
-    return (
-      <div
-        key={service.id}
-        className="group p-6 bg-card rounded-xl border border-border card-hover w-[280px] min-w-[280px] flex-shrink-0"
-      >
-        <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 transition-colors duration-300 overflow-hidden">
-          {service.icon_url ? (
-            <img src={service.icon_url} alt={service.title} className="w-full h-full object-cover" />
-          ) : (
-            <IconComponent size={24} className="text-accent-foreground group-hover:text-primary-foreground" />
-          )}
-        </div>
-        <h3 className="font-display text-xl text-foreground mb-2">{service.title}</h3>
-        <p
-          className="text-muted-foreground text-sm"
-          dangerouslySetInnerHTML={renderTextWithLinks(service.description)}
-        />
-      </div>
-    );
-  });
-
   return (
     <section className="section-padding bg-background">
       <div className="container-wide">
@@ -92,10 +68,32 @@ export const AboutSection = () => {
             From strategy to execution, I help brands and businesses communicate with clarity, creativity, and impact.
           </p>
         </div>
-
-        <InfiniteScrollRow speed={30}>
-          {serviceCards}
-        </InfiniteScrollRow>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {services.map((service, index) => {
+            const IconComponent = iconMap[service.icon || "PenTool"] || PenTool;
+            return (
+              <div
+                key={service.id}
+                className="group p-6 bg-card rounded-xl border border-border card-hover"
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 transition-colors duration-300 overflow-hidden">
+                  {service.icon_url ? (
+                    <img src={service.icon_url} alt={service.title} className="w-full h-full object-cover" />
+                  ) : (
+                    <IconComponent size={24} className="text-accent-foreground group-hover:text-primary-foreground" />
+                  )}
+                </div>
+                <h3 className="font-display text-xl text-foreground mb-2">{service.title}</h3>
+                <p 
+                  className="text-muted-foreground text-sm"
+                  dangerouslySetInnerHTML={renderTextWithLinks(service.description)}
+                />
+              </div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );
