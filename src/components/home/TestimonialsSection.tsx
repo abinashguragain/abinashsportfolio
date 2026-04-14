@@ -16,7 +16,7 @@ interface Testimonial {
   company_link: string | null;
 }
 
-const defaultTestimonials = [
+const defaultTestimonials: Testimonial[] = [
   {
     id: "1",
     name: "Sarah Mitchell",
@@ -24,6 +24,8 @@ const defaultTestimonials = [
     company: "TechFlow Inc.",
     content: "Working with this writer transformed our content strategy. Our blog traffic increased by 340% in just six months. The storytelling approach made our technical content accessible and engaging.",
     avatar_url: null,
+    name_link: null,
+    company_link: null,
   },
   {
     id: "2",
@@ -32,6 +34,8 @@ const defaultTestimonials = [
     company: "StartupLab",
     content: "Exceptional talent for capturing brand voice. Every piece felt authentic to our company while driving real results. Our conversion rates improved significantly after the website copy overhaul.",
     avatar_url: null,
+    name_link: null,
+    company_link: null,
   },
   {
     id: "3",
@@ -40,6 +44,8 @@ const defaultTestimonials = [
     company: "MediaWorks",
     content: "A rare combination of creative flair and strategic thinking. Deadlines were always met, communication was excellent, and the quality consistently exceeded expectations. Highly recommended.",
     avatar_url: null,
+    name_link: null,
+    company_link: null,
   },
 ];
 
