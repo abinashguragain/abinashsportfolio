@@ -12,6 +12,8 @@ interface Testimonial {
   company: string | null;
   content: string;
   avatar_url: string | null;
+  name_link: string | null;
+  company_link: string | null;
 }
 
 const defaultTestimonials = [
