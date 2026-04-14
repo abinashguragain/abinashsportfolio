@@ -809,10 +809,12 @@ export type Database = {
         Row: {
           avatar_url: string | null
           company: string | null
+          company_link: string | null
           content: string
           id: string
           is_active: boolean | null
           name: string
+          name_link: string | null
           rating: number | null
           role: string | null
           sort_order: number | null
@@ -821,10 +823,12 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           company?: string | null
+          company_link?: string | null
           content: string
           id?: string
           is_active?: boolean | null
           name: string
+          name_link?: string | null
           rating?: number | null
           role?: string | null
           sort_order?: number | null
@@ -833,10 +837,12 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           company?: string | null
+          company_link?: string | null
           content?: string
           id?: string
           is_active?: boolean | null
           name?: string
+          name_link?: string | null
           rating?: number | null
           role?: string | null
           sort_order?: number | null
