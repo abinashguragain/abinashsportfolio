@@ -55,16 +55,31 @@ export const TestimonialsSection = () => {
 
   useEffect(() => {
     const fetchTestimonials = async () => {
-      const { data } = await supabase
+      // First check for manually selected homepage testimonials
+      const { data: homepageData } = await supabase
         .from("testimonials")
         .select("*")
         .eq("is_active", true)
-        .order("sort_order", { ascending: true });
+        .eq("show_on_homepage", true)
+        .order("sort_order", { ascending: true })
+        .limit(3);
 
-      if (data && data.length > 0) {
-        setTestimonials(data);
+      if (homepageData && homepageData.length > 0) {
+        setTestimonials(homepageData.slice(0, 3));
       } else {
-        setTestimonials(defaultTestimonials);
+        // Fallback to latest 3
+        const { data: latestData } = await supabase
+          .from("testimonials")
+          .select("*")
+          .eq("is_active", true)
+          .order("updated_at", { ascending: false })
+          .limit(3);
+
+        if (latestData && latestData.length > 0) {
+          setTestimonials(latestData);
+        } else {
+          setTestimonials(defaultTestimonials);
+        }
       }
       setLoading(false);
     };

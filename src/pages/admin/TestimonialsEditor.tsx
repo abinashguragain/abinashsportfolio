@@ -9,7 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import { useImageUpload } from "@/hooks/use-image-upload";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Plus, Trash2, Star } from "lucide-react";
+import { Loader2, Plus, Trash2, Star, Home } from "lucide-react";
 import {
   Dialog,
   DialogContent,
