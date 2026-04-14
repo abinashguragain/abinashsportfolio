@@ -254,6 +254,24 @@ const TestimonialsEditor = () => {
                   onChange={(e) => setEditingItem({ ...editingItem, company: e.target.value })}
                 />
               </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Name Link (optional)</Label>
+                  <Input
+                    placeholder="https://..."
+                    value={editingItem.name_link || ""}
+                    onChange={(e) => setEditingItem({ ...editingItem, name_link: e.target.value || null })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Company Link (optional)</Label>
+                  <Input
+                    placeholder="https://..."
+                    value={editingItem.company_link || ""}
+                    onChange={(e) => setEditingItem({ ...editingItem, company_link: e.target.value || null })}
+                  />
+                </div>
+              </div>
               <div className="space-y-2">
                 <Label>Testimonial</Label>
                 <Textarea
