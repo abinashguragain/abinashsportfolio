@@ -29,6 +29,7 @@ interface Testimonial {
   sort_order: number;
   name_link: string | null;
   company_link: string | null;
+  show_on_homepage: boolean;
 }
 
 const TestimonialsEditor = () => {
@@ -132,6 +133,7 @@ const TestimonialsEditor = () => {
       sort_order: testimonials.length,
       name_link: null,
       company_link: null,
+      show_on_homepage: false,
     });
     setIsDialogOpen(true);
   };
