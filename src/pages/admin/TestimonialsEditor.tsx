@@ -27,6 +27,8 @@ interface Testimonial {
   rating: number;
   is_active: boolean;
   sort_order: number;
+  name_link: string | null;
+  company_link: string | null;
 }
 
 const TestimonialsEditor = () => {
@@ -67,6 +69,8 @@ const TestimonialsEditor = () => {
         rating: item.rating,
         is_active: item.is_active,
         sort_order: item.sort_order,
+        name_link: item.name_link,
+        company_link: item.company_link,
       });
 
       if (error) {
@@ -86,6 +90,8 @@ const TestimonialsEditor = () => {
           avatar_url: item.avatar_url,
           rating: item.rating,
           is_active: item.is_active,
+          name_link: item.name_link,
+          company_link: item.company_link,
         })
         .eq("id", item.id);
 
@@ -124,6 +130,8 @@ const TestimonialsEditor = () => {
       rating: 5,
       is_active: true,
       sort_order: testimonials.length,
+      name_link: null,
+      company_link: null,
     });
     setIsDialogOpen(true);
   };
@@ -245,6 +253,24 @@ const TestimonialsEditor = () => {
                   value={editingItem.company || ""}
                   onChange={(e) => setEditingItem({ ...editingItem, company: e.target.value })}
                 />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Name Link (optional)</Label>
+                  <Input
+                    placeholder="https://..."
+                    value={editingItem.name_link || ""}
+                    onChange={(e) => setEditingItem({ ...editingItem, name_link: e.target.value || null })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Company Link (optional)</Label>
+                  <Input
+                    placeholder="https://..."
+                    value={editingItem.company_link || ""}
+                    onChange={(e) => setEditingItem({ ...editingItem, company_link: e.target.value || null })}
+                  />
+                </div>
               </div>
               <div className="space-y-2">
                 <Label>Testimonial</Label>
