@@ -127,9 +127,27 @@ export const TestimonialsSection = () => {
                     </div>
                   )}
                   <div>
-                    <p className="font-semibold text-foreground">{testimonial.name}</p>
+                    {testimonial.name_link ? (
+                      <a href={testimonial.name_link} target="_blank" rel="noopener noreferrer" className="font-semibold text-foreground hover:text-primary transition-colors">
+                        {testimonial.name}
+                      </a>
+                    ) : (
+                      <p className="font-semibold text-foreground">{testimonial.name}</p>
+                    )}
                     <p className="text-sm text-muted-foreground">
-                      {testimonial.role}{testimonial.company && `, ${testimonial.company}`}
+                      {testimonial.role}
+                      {testimonial.company && (
+                        <>
+                          {testimonial.role && ", "}
+                          {testimonial.company_link ? (
+                            <a href={testimonial.company_link} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                              {testimonial.company}
+                            </a>
+                          ) : (
+                            testimonial.company
+                          )}
+                        </>
+                      )}
                     </p>
                   </div>
                 </div>
