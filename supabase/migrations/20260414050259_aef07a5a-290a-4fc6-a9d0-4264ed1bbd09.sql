@@ -1,0 +1,1 @@
+ALTER TABLE public.testimonials ADD COLUMN show_on_homepage boolean DEFAULT false;

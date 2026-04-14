@@ -817,6 +817,7 @@ export type Database = {
           name_link: string | null
           rating: number | null
           role: string | null
+          show_on_homepage: boolean | null
           sort_order: number | null
           updated_at: string
         }
@@ -831,6 +832,7 @@ export type Database = {
           name_link?: string | null
           rating?: number | null
           role?: string | null
+          show_on_homepage?: boolean | null
           sort_order?: number | null
           updated_at?: string
         }
@@ -845,6 +847,7 @@ export type Database = {
           name_link?: string | null
           rating?: number | null
           role?: string | null
+          show_on_homepage?: boolean | null
           sort_order?: number | null
           updated_at?: string
         }
