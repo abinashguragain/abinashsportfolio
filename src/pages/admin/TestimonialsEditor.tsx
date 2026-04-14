@@ -72,6 +72,7 @@ const TestimonialsEditor = () => {
         sort_order: item.sort_order,
         name_link: item.name_link,
         company_link: item.company_link,
+        show_on_homepage: item.show_on_homepage,
       });
 
       if (error) {
@@ -93,6 +94,7 @@ const TestimonialsEditor = () => {
           is_active: item.is_active,
           name_link: item.name_link,
           company_link: item.company_link,
+          show_on_homepage: item.show_on_homepage,
         })
         .eq("id", item.id);
 
