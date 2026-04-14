@@ -9,7 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import { useImageUpload } from "@/hooks/use-image-upload";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Plus, Trash2, Star } from "lucide-react";
+import { Loader2, Plus, Trash2, Star, Home } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -29,6 +29,7 @@ interface Testimonial {
   sort_order: number;
   name_link: string | null;
   company_link: string | null;
+  show_on_homepage: boolean;
 }
 
 const TestimonialsEditor = () => {
@@ -71,6 +72,7 @@ const TestimonialsEditor = () => {
         sort_order: item.sort_order,
         name_link: item.name_link,
         company_link: item.company_link,
+        show_on_homepage: item.show_on_homepage,
       });
 
       if (error) {
@@ -92,6 +94,7 @@ const TestimonialsEditor = () => {
           is_active: item.is_active,
           name_link: item.name_link,
           company_link: item.company_link,
+          show_on_homepage: item.show_on_homepage,
         })
         .eq("id", item.id);
 
@@ -132,6 +135,7 @@ const TestimonialsEditor = () => {
       sort_order: testimonials.length,
       name_link: null,
       company_link: null,
+      show_on_homepage: false,
     });
     setIsDialogOpen(true);
   };
@@ -209,13 +213,20 @@ const TestimonialsEditor = () => {
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground line-clamp-3">{item.content}</p>
-              <div className="flex items-center gap-1 mt-2">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`h-3 w-3 ${i < item.rating ? "fill-accent text-accent" : "text-muted"}`}
-                  />
-                ))}
+              <div className="flex items-center justify-between mt-2">
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star
+                      key={i}
+                      className={`h-3 w-3 ${i < item.rating ? "fill-accent text-accent" : "text-muted"}`}
+                    />
+                  ))}
+                </div>
+                {item.show_on_homepage && (
+                  <span className="flex items-center gap-1 text-xs text-primary">
+                    <Home className="h-3 w-3" /> Homepage
+                  </span>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -314,6 +325,22 @@ const TestimonialsEditor = () => {
                   onCheckedChange={(checked) => setEditingItem({ ...editingItem, is_active: checked })}
                 />
                 <Label>Active</Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <Switch
+                  checked={editingItem.show_on_homepage}
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      const currentHomepageCount = testimonials.filter(t => t.show_on_homepage && t.id !== editingItem.id).length;
+                      if (currentHomepageCount >= 3) {
+                        toast({ title: "Limit reached", description: "Maximum 3 testimonials can be shown on the homepage. Remove one first.", variant: "destructive" });
+                        return;
+                      }
+                    }
+                    setEditingItem({ ...editingItem, show_on_homepage: checked });
+                  }}
+                />
+                <Label>Show on Homepage</Label>
               </div>
               <Button
                 onClick={() => handleSave(editingItem)}
