@@ -275,29 +275,29 @@ const Contact = () => {
                   />
                 </div>
 
-                {/* Turnstile CAPTCHA */}
-                {siteKey && (
-                  <div className="flex justify-center">
-                    <div ref={turnstileRef} />
-                  </div>
-                )}
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <Button
+                    type="submit"
+                    variant="hero"
+                    size="lg"
+                    disabled={isSubmitting || (siteKey && !turnstileToken)}
+                    className="w-full sm:w-auto"
+                  >
+                    {isSubmitting ? (
+                      "Sending..."
+                    ) : (
+                      <>
+                        Send Message
+                        <Send size={18} />
+                      </>
+                    )}
+                  </Button>
 
-                <Button
-                  type="submit"
-                  variant="hero"
-                  size="lg"
-                  disabled={isSubmitting || (siteKey && !turnstileToken)}
-                  className="w-full sm:w-auto"
-                >
-                  {isSubmitting ? (
-                    "Sending..."
-                  ) : (
-                    <>
-                      Send Message
-                      <Send size={18} />
-                    </>
+                  {/* Turnstile CAPTCHA */}
+                  {siteKey && (
+                    <div ref={turnstileRef} />
                   )}
-                </Button>
+                </div>
           </form>
         </div>
       </section>
