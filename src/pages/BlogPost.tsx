@@ -297,18 +297,23 @@ const BlogPost = () => {
         </div>
       </section>
 
-      {/* Content */}
-      <section className="section-padding bg-background">
-        <div className="container-narrow">
-          {/* Featured Image */}
-          {post.featured_image && (
+      {/* Featured Image */}
+      {post.featured_image && (
+        <section className="bg-background">
+          <div className="container-narrow py-8">
             <img
               src={post.featured_image}
               alt={post.featured_image_alt || post.title}
               title={post.featured_image_alt || post.title}
-              className="w-full h-auto rounded-xl border border-border mb-8"
+              className="w-full h-auto rounded-xl border border-border"
             />
-          )}
+          </div>
+        </section>
+      )}
+
+      {/* Content */}
+      <section className="section-padding bg-background">
+        <div className="container-narrow">
           <article className="prose-custom" style={customFontStyle}>
             {post.content && (
               isHtmlContent(post.content) ? (
