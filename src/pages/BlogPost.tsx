@@ -217,7 +217,7 @@ const BlogPost = () => {
       )}
       
       {/* Header */}
-      <section className="py-8 md:py-12 bg-gradient-hero">
+      <section className="pt-8 md:pt-12 pb-0 bg-gradient-hero">
         <div className="container-narrow">
           {/* Categories */}
           {post.blog_post_categories && post.blog_post_categories.length > 0 && (
