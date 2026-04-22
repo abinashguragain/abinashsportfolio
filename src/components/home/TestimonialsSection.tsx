@@ -149,92 +149,16 @@ export const TestimonialsSection = () => {
         </div>
         
         <div ref={containerRef} className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
-          {testimonials.map((testimonial, index) => {
-            const paragraphs = toParagraphs(testimonial.content);
-            const isExpanded = expandedId === testimonial.id;
-            // When any card in the row is expanded, show full content for all cards in that row
-            const showFull = anyExpanded;
-            // Heuristic: ~15 lines * ~55 chars/line ≈ 800 chars before clamping kicks in
-            // Show "...more" whenever there's meaningful content beyond a brief intro
-            const isLong = testimonial.content.length > 200;
-
-            return (
-              <div
-                key={testimonial.id}
-                className="relative p-6 md:p-8 bg-background rounded-xl border border-border card-hover transition-all flex flex-col h-full"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <div className="flex-1 flex flex-col">
-                  <div className="relative">
-                    <div className={`text-foreground text-sm leading-relaxed space-y-3 ${showFull ? "" : "testimonial-clamp"}`}>
-                      {paragraphs.map((para, i) => {
-                        const isFirst = i === 0;
-                        const isLast = i === paragraphs.length - 1;
-                        const text = `${isFirst ? `"` : ""}${para}${isLast ? `"` : ""}`;
-                        return (
-                          <p key={i}>
-                            {isFirst && (
-                              <span
-                                aria-hidden="true"
-                                className="float-right ml-3 mb-1 text-primary/20 inline-flex items-start"
-                              >
-                                <Quote size={32} />
-                              </span>
-                            )}
-                            <span dangerouslySetInnerHTML={renderTextWithLinks(text)} />
-                          </p>
-                        );
-                      })}
-                    </div>
-                    {isLong && !anyExpanded && (
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setExpandedId(testimonial.id);
-                        }}
-                        className="absolute bottom-0 right-0 pl-8 pr-1 text-primary hover:underline font-medium text-sm bg-gradient-to-r from-transparent via-background to-background"
-                      >
-                        ...more
-                      </button>
-                    )}
-                  </div>
-
-                  <div className="mt-auto pt-4 border-t border-border flex items-center gap-3">
-                    {testimonial.avatar_url && (
-                      <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
-                        <img src={testimonial.avatar_url} alt={testimonial.name} className="w-full h-full object-cover" />
-                      </div>
-                    )}
-                    <div>
-                      {testimonial.name_link ? (
-                        <a href={testimonial.name_link} target="_blank" rel="noopener noreferrer" className="font-semibold text-sm text-foreground hover:text-primary transition-colors">
-                          {testimonial.name}
-                        </a>
-                      ) : (
-                        <p className="font-semibold text-sm text-foreground">{testimonial.name}</p>
-                      )}
-                      <p className="text-xs text-muted-foreground">
-                        {testimonial.role}
-                        {testimonial.company && (
-                          <>
-                            {testimonial.role && ", "}
-                            {testimonial.company_link ? (
-                              <a href={testimonial.company_link} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
-                                {testimonial.company}
-                              </a>
-                            ) : (
-                              testimonial.company
-                            )}
-                          </>
-                        )}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+          {testimonials.map((testimonial, index) => (
+            <TestimonialCard
+              key={testimonial.id}
+              testimonial={testimonial}
+              index={index}
+              showFull={anyExpanded}
+              anyExpanded={anyExpanded}
+              onExpand={() => setExpandedId(testimonial.id)}
+            />
+          ))}
         </div>
       </div>
     </section>
