@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Quote, Loader2, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -49,13 +49,22 @@ const defaultTestimonials: Testimonial[] = [
   },
 ];
 
+const WORD_LIMIT = 55;
+
+const truncateWords = (text: string, limit: number) => {
+  const words = text.trim().split(/\s+/);
+  if (words.length <= limit) return { truncated: text, isTruncated: false };
+  return { truncated: words.slice(0, limit).join(" "), isTruncated: true };
+};
+
 export const TestimonialsSection = () => {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [loading, setLoading] = useState(true);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchTestimonials = async () => {
-      // First check for manually selected homepage testimonials
       const { data: homepageData } = await supabase
         .from("testimonials")
         .select("*")
@@ -67,7 +76,6 @@ export const TestimonialsSection = () => {
       if (homepageData && homepageData.length > 0) {
         setTestimonials(homepageData.slice(0, 3));
       } else {
-        // Fallback to latest 3
         const { data: latestData } = await supabase
           .from("testimonials")
           .select("*")
@@ -86,6 +94,18 @@ export const TestimonialsSection = () => {
     fetchTestimonials();
   }, []);
 
+  // Collapse when clicking outside the testimonials grid
+  useEffect(() => {
+    if (!expandedId) return;
+    const handleClick = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setExpandedId(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [expandedId]);
+
   if (loading) {
     return (
       <section className="section-padding bg-card">
@@ -95,6 +115,8 @@ export const TestimonialsSection = () => {
       </section>
     );
   }
+
+  const anyExpanded = expandedId !== null;
 
   return (
     <section className="section-padding bg-card">
@@ -116,59 +138,79 @@ export const TestimonialsSection = () => {
           </Button>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {testimonials.map((testimonial, index) => (
-            <div
-              key={testimonial.id}
-              className="relative p-6 md:p-8 bg-background rounded-xl border border-border card-hover"
-              style={{ animationDelay: `${index * 100}ms` }}
-            >
-              {/* Quote icon */}
-              <div className="absolute top-6 right-6 text-primary/20 pointer-events-none">
-                <Quote size={32} />
-              </div>
-              
-              {/* Content */}
-              <div className="space-y-4">
-                <p 
-                  className="text-foreground leading-relaxed pr-12"
-                  dangerouslySetInnerHTML={renderTextWithLinks(`"${testimonial.content}"`)}
-                />
+        <div ref={containerRef} className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+          {testimonials.map((testimonial, index) => {
+            const { truncated, isTruncated } = truncateWords(testimonial.content, WORD_LIMIT);
+            const isExpanded = expandedId === testimonial.id;
+            // When any card in the row is expanded, show full content for all cards in that row
+            const showFull = anyExpanded || !isTruncated;
+            const displayText = showFull ? testimonial.content : truncated;
+
+            return (
+              <div
+                key={testimonial.id}
+                className="relative p-6 md:p-8 bg-background rounded-xl border border-border card-hover transition-all"
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                <div className="absolute top-6 right-6 text-primary/20">
+                  <Quote size={32} />
+                </div>
                 
-                <div className="pt-4 border-t border-border flex items-center gap-3">
-                  {testimonial.avatar_url && (
-                    <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
-                      <img src={testimonial.avatar_url} alt={testimonial.name} className="w-full h-full object-cover" />
-                    </div>
-                  )}
-                  <div>
-                    {testimonial.name_link ? (
-                      <a href={testimonial.name_link} target="_blank" rel="noopener noreferrer" className="font-semibold text-foreground hover:text-primary transition-colors">
-                        {testimonial.name}
-                      </a>
-                    ) : (
-                      <p className="font-semibold text-foreground">{testimonial.name}</p>
+                <div className="space-y-4">
+                  <p className="text-foreground leading-relaxed">
+                    <span dangerouslySetInnerHTML={renderTextWithLinks(`"${displayText}${!showFull ? "..." : ""}"`)} />
+                    {isTruncated && !anyExpanded && (
+                      <>
+                        {" "}
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setExpandedId(testimonial.id);
+                          }}
+                          className="text-primary hover:underline font-medium"
+                        >
+                          more
+                        </button>
+                      </>
                     )}
-                    <p className="text-sm text-muted-foreground">
-                      {testimonial.role}
-                      {testimonial.company && (
-                        <>
-                          {testimonial.role && ", "}
-                          {testimonial.company_link ? (
-                            <a href={testimonial.company_link} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
-                              {testimonial.company}
-                            </a>
-                          ) : (
-                            testimonial.company
-                          )}
-                        </>
+                  </p>
+                  
+                  <div className="pt-4 border-t border-border flex items-center gap-3">
+                    {testimonial.avatar_url && (
+                      <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
+                        <img src={testimonial.avatar_url} alt={testimonial.name} className="w-full h-full object-cover" />
+                      </div>
+                    )}
+                    <div>
+                      {testimonial.name_link ? (
+                        <a href={testimonial.name_link} target="_blank" rel="noopener noreferrer" className="font-semibold text-foreground hover:text-primary transition-colors">
+                          {testimonial.name}
+                        </a>
+                      ) : (
+                        <p className="font-semibold text-foreground">{testimonial.name}</p>
                       )}
-                    </p>
+                      <p className="text-sm text-muted-foreground">
+                        {testimonial.role}
+                        {testimonial.company && (
+                          <>
+                            {testimonial.role && ", "}
+                            {testimonial.company_link ? (
+                              <a href={testimonial.company_link} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                                {testimonial.company}
+                              </a>
+                            ) : (
+                              testimonial.company
+                            )}
+                          </>
+                        )}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
