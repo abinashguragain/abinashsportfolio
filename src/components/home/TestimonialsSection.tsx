@@ -163,10 +163,6 @@ export const TestimonialsSection = () => {
                 className="relative p-6 md:p-8 bg-background rounded-xl border border-border card-hover transition-all flex flex-col h-full"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
-                <div className="absolute top-6 right-6 text-primary/20">
-                  <Quote size={32} />
-                </div>
-
                 <div className="flex-1 flex flex-col">
                   <div className={`text-foreground text-sm leading-relaxed space-y-3 ${showFull ? "" : "testimonial-clamp"}`}>
                     {paragraphs.map((para, i) => {
@@ -175,6 +171,14 @@ export const TestimonialsSection = () => {
                       const text = `${isFirst ? `"` : ""}${para}${isLast ? `"` : ""}`;
                       return (
                         <p key={i}>
+                          {isFirst && (
+                            <span
+                              aria-hidden="true"
+                              className="float-right ml-3 mb-1 text-primary/20 inline-flex items-start"
+                            >
+                              <Quote size={32} />
+                            </span>
+                          )}
                           <span dangerouslySetInnerHTML={renderTextWithLinks(text)} />
                         </p>
                       );
