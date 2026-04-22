@@ -165,38 +165,40 @@ export const TestimonialsSection = () => {
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <div className="flex-1 flex flex-col">
-                  <div className={`text-foreground text-sm leading-relaxed space-y-3 ${showFull ? "" : "testimonial-clamp"}`}>
-                    {paragraphs.map((para, i) => {
-                      const isFirst = i === 0;
-                      const isLast = i === paragraphs.length - 1;
-                      const text = `${isFirst ? `"` : ""}${para}${isLast ? `"` : ""}`;
-                      return (
-                        <p key={i}>
-                          {isFirst && (
-                            <span
-                              aria-hidden="true"
-                              className="float-right ml-3 mb-1 text-primary/20 inline-flex items-start"
-                            >
-                              <Quote size={32} />
-                            </span>
-                          )}
-                          <span dangerouslySetInnerHTML={renderTextWithLinks(text)} />
-                        </p>
-                      );
-                    })}
+                  <div className="relative">
+                    <div className={`text-foreground text-sm leading-relaxed space-y-3 ${showFull ? "" : "testimonial-clamp"}`}>
+                      {paragraphs.map((para, i) => {
+                        const isFirst = i === 0;
+                        const isLast = i === paragraphs.length - 1;
+                        const text = `${isFirst ? `"` : ""}${para}${isLast ? `"` : ""}`;
+                        return (
+                          <p key={i}>
+                            {isFirst && (
+                              <span
+                                aria-hidden="true"
+                                className="float-right ml-3 mb-1 text-primary/20 inline-flex items-start"
+                              >
+                                <Quote size={32} />
+                              </span>
+                            )}
+                            <span dangerouslySetInnerHTML={renderTextWithLinks(text)} />
+                          </p>
+                        );
+                      })}
+                    </div>
+                    {isLong && !anyExpanded && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setExpandedId(testimonial.id);
+                        }}
+                        className="absolute bottom-0 right-0 pl-8 pr-1 text-primary hover:underline font-medium text-sm bg-gradient-to-r from-transparent via-background to-background"
+                      >
+                        ...more
+                      </button>
+                    )}
                   </div>
-                  {isLong && !anyExpanded && (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setExpandedId(testimonial.id);
-                      }}
-                      className="text-primary hover:underline font-medium text-sm mt-2 self-start"
-                    >
-                      ...more
-                    </button>
-                  )}
 
                   <div className="mt-auto pt-4 border-t border-border flex items-center gap-3">
                     {testimonial.avatar_url && (
