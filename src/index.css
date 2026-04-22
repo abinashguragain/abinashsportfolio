@@ -361,3 +361,11 @@
     transform: scale(1);
   }
 }
+
+/* Testimonial line clamp - limits collapsed testimonial to ~15 lines */
+.testimonial-clamp {
+  display: -webkit-box;
+  -webkit-line-clamp: 15;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
