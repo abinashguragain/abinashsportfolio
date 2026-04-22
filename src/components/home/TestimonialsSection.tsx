@@ -154,6 +154,8 @@ export const TestimonialsSection = () => {
             const isExpanded = expandedId === testimonial.id;
             // When any card in the row is expanded, show full content for all cards in that row
             const showFull = anyExpanded;
+            // Heuristic: ~15 lines * ~55 chars/line ≈ 800 chars before clamping kicks in
+            const isLong = testimonial.content.length > 800;
 
             return (
               <div
@@ -178,7 +180,7 @@ export const TestimonialsSection = () => {
                       );
                     })}
                   </div>
-                  {!anyExpanded && (
+                  {isLong && !anyExpanded && (
                     <button
                       type="button"
                       onClick={(e) => {
