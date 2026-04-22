@@ -49,12 +49,22 @@ const defaultTestimonials: Testimonial[] = [
   },
 ];
 
-const WORD_LIMIT = 55;
+const LINE_CLAMP = 15;
 
-const truncateWords = (text: string, limit: number) => {
-  const words = text.trim().split(/\s+/);
-  if (words.length <= limit) return { truncated: text, isTruncated: false };
-  return { truncated: words.slice(0, limit).join(" "), isTruncated: true };
+// Render text into paragraphs by splitting on blank lines, falling back to
+// sentence groups so long single-blob testimonials still get paragraph breaks.
+const toParagraphs = (text: string): string[] => {
+  const trimmed = text.trim();
+  if (!trimmed) return [];
+  const explicit = trimmed.split(/\n\s*\n+/).map((p) => p.trim()).filter(Boolean);
+  if (explicit.length > 1) return explicit;
+
+  const sentences = trimmed.match(/[^.!?]+[.!?]+["')\]]*\s*|[^.!?]+$/g) ?? [trimmed];
+  const groups: string[] = [];
+  for (let i = 0; i < sentences.length; i += 3) {
+    groups.push(sentences.slice(i, i + 3).join(" ").trim());
+  }
+  return groups;
 };
 
 export const TestimonialsSection = () => {
