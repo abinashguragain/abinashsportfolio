@@ -49,12 +49,22 @@ const defaultTestimonials: Testimonial[] = [
   },
 ];
 
-const WORD_LIMIT = 55;
+const LINE_CLAMP = 15;
 
-const truncateWords = (text: string, limit: number) => {
-  const words = text.trim().split(/\s+/);
-  if (words.length <= limit) return { truncated: text, isTruncated: false };
-  return { truncated: words.slice(0, limit).join(" "), isTruncated: true };
+// Render text into paragraphs by splitting on blank lines, falling back to
+// sentence groups so long single-blob testimonials still get paragraph breaks.
+const toParagraphs = (text: string): string[] => {
+  const trimmed = text.trim();
+  if (!trimmed) return [];
+  const explicit = trimmed.split(/\n\s*\n+/).map((p) => p.trim()).filter(Boolean);
+  if (explicit.length > 1) return explicit;
+
+  const sentences = trimmed.match(/[^.!?]+[.!?]+["')\]]*\s*|[^.!?]+$/g) ?? [trimmed];
+  const groups: string[] = [];
+  for (let i = 0; i < sentences.length; i += 3) {
+    groups.push(sentences.slice(i, i + 3).join(" ").trim());
+  }
+  return groups;
 };
 
 export const TestimonialsSection = () => {
@@ -140,43 +150,50 @@ export const TestimonialsSection = () => {
         
         <div ref={containerRef} className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
           {testimonials.map((testimonial, index) => {
-            const { truncated, isTruncated } = truncateWords(testimonial.content, WORD_LIMIT);
+            const paragraphs = toParagraphs(testimonial.content);
             const isExpanded = expandedId === testimonial.id;
             // When any card in the row is expanded, show full content for all cards in that row
-            const showFull = anyExpanded || !isTruncated;
-            const displayText = showFull ? testimonial.content : truncated;
+            const showFull = anyExpanded;
+            // Heuristic: ~15 lines * ~55 chars/line ≈ 800 chars before clamping kicks in
+            const isLong = testimonial.content.length > 800;
 
             return (
               <div
                 key={testimonial.id}
-                className="relative p-6 md:p-8 bg-background rounded-xl border border-border card-hover transition-all"
+                className="relative p-6 md:p-8 bg-background rounded-xl border border-border card-hover transition-all flex flex-col h-full"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <div className="absolute top-6 right-6 text-primary/20">
                   <Quote size={32} />
                 </div>
-                
-                <div className="space-y-4">
-                  <p className="text-foreground leading-relaxed">
-                    <span dangerouslySetInnerHTML={renderTextWithLinks(`"${displayText}${!showFull ? "..." : ""}"`)} />
-                    {isTruncated && !anyExpanded && (
-                      <>
-                        {" "}
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setExpandedId(testimonial.id);
-                          }}
-                          className="text-primary hover:underline font-medium"
-                        >
-                          more
-                        </button>
-                      </>
-                    )}
-                  </p>
-                  
-                  <div className="pt-4 border-t border-border flex items-center gap-3">
+
+                <div className="flex-1 flex flex-col">
+                  <div className={`text-foreground text-sm leading-relaxed space-y-3 ${showFull ? "" : "testimonial-clamp"}`}>
+                    {paragraphs.map((para, i) => {
+                      const isFirst = i === 0;
+                      const isLast = i === paragraphs.length - 1;
+                      const text = `${isFirst ? `"` : ""}${para}${isLast ? `"` : ""}`;
+                      return (
+                        <p key={i}>
+                          <span dangerouslySetInnerHTML={renderTextWithLinks(text)} />
+                        </p>
+                      );
+                    })}
+                  </div>
+                  {isLong && !anyExpanded && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setExpandedId(testimonial.id);
+                      }}
+                      className="text-primary hover:underline font-medium text-sm mt-2 self-start"
+                    >
+                      ...more
+                    </button>
+                  )}
+
+                  <div className="mt-auto pt-4 border-t border-border flex items-center gap-3">
                     {testimonial.avatar_url && (
                       <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
                         <img src={testimonial.avatar_url} alt={testimonial.name} className="w-full h-full object-cover" />
@@ -184,13 +201,13 @@ export const TestimonialsSection = () => {
                     )}
                     <div>
                       {testimonial.name_link ? (
-                        <a href={testimonial.name_link} target="_blank" rel="noopener noreferrer" className="font-semibold text-foreground hover:text-primary transition-colors">
+                        <a href={testimonial.name_link} target="_blank" rel="noopener noreferrer" className="font-semibold text-sm text-foreground hover:text-primary transition-colors">
                           {testimonial.name}
                         </a>
                       ) : (
-                        <p className="font-semibold text-foreground">{testimonial.name}</p>
+                        <p className="font-semibold text-sm text-foreground">{testimonial.name}</p>
                       )}
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-xs text-muted-foreground">
                         {testimonial.role}
                         {testimonial.company && (
                           <>
