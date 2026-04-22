@@ -124,14 +124,14 @@ export const TestimonialsSection = () => {
               style={{ animationDelay: `${index * 100}ms` }}
             >
               {/* Quote icon */}
-              <div className="absolute top-6 right-6 text-primary/20">
+              <div className="absolute top-6 right-6 text-primary/20 pointer-events-none">
                 <Quote size={32} />
               </div>
               
               {/* Content */}
               <div className="space-y-4">
                 <p 
-                  className="text-foreground leading-relaxed"
+                  className="text-foreground leading-relaxed pr-12"
                   dangerouslySetInnerHTML={renderTextWithLinks(`"${testimonial.content}"`)}
                 />
                 
