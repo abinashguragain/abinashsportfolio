@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Quote, Loader2, Star } from "lucide-react";
+import { Quote, Loader2 } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { SEOHead } from "@/components/SEOHead";
 import { supabase } from "@/integrations/supabase/client";
