@@ -155,7 +155,8 @@ export const TestimonialsSection = () => {
             // When any card in the row is expanded, show full content for all cards in that row
             const showFull = anyExpanded;
             // Heuristic: ~15 lines * ~55 chars/line ≈ 800 chars before clamping kicks in
-            const isLong = testimonial.content.length > 800;
+            // Show "...more" whenever there's meaningful content beyond a brief intro
+            const isLong = testimonial.content.length > 200;
 
             return (
               <div
