@@ -167,16 +167,16 @@ export const TestimonialsSection = () => {
 
                 <div className="flex-1 flex flex-col">
                   <div className={`text-foreground text-sm leading-relaxed space-y-3 ${showFull ? "" : "testimonial-clamp"}`}>
-                    {paragraphs.map((para, i) => (
-                      <p key={i}>
-                        <span
-                          dangerouslySetInnerHTML={renderTextWithLinks(
-                            i === 0 ? `"${para}` : para + (i === paragraphs.length - 1 ? `"` : "")
-                          )}
-                        />
-                        {i === 0 && paragraphs.length === 1 && !showFull ? "" : null}
-                      </p>
-                    ))}
+                    {paragraphs.map((para, i) => {
+                      const isFirst = i === 0;
+                      const isLast = i === paragraphs.length - 1;
+                      const text = `${isFirst ? `"` : ""}${para}${isLast ? `"` : ""}`;
+                      return (
+                        <p key={i}>
+                          <span dangerouslySetInnerHTML={renderTextWithLinks(text)} />
+                        </p>
+                      );
+                    })}
                   </div>
                   {!anyExpanded && (
                     <button
