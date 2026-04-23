@@ -69,13 +69,18 @@ export const AboutSection = () => {
           </p>
         </div>
         
-        <div className="flex flex-wrap justify-center gap-6">
+        <div
+          className="grid gap-6 justify-center"
+          style={{
+            gridTemplateColumns: `repeat(${Math.min(services.length, 4)}, minmax(0, 1fr))`,
+          }}
+        >
           {services.map((service, index) => {
             const IconComponent = iconMap[service.icon || "PenTool"] || PenTool;
             return (
               <div
                 key={service.id}
-                className="group p-6 bg-card rounded-xl border border-border card-hover w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(25%-1.125rem)] lg:max-w-xs"
+                className="group p-6 bg-card rounded-xl border border-border card-hover w-full"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 transition-colors duration-300 overflow-hidden">
