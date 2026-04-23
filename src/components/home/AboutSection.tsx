@@ -69,12 +69,25 @@ export const AboutSection = () => {
           </p>
         </div>
         
-        <div
-          className="grid gap-6 justify-center"
-          style={{
-            gridTemplateColumns: `repeat(${Math.min(services.length, 4)}, minmax(0, 1fr))`,
-          }}
-        >
+        {(() => {
+          const count = Math.min(services.length, 4);
+          const desktopCols: Record<number, string> = {
+            1: "lg:grid-cols-1",
+            2: "lg:grid-cols-2",
+            3: "lg:grid-cols-3",
+            4: "lg:grid-cols-4",
+          };
+          const tabletCols = count >= 2 ? "sm:grid-cols-2" : "sm:grid-cols-1";
+          const maxWidth: Record<number, string> = {
+            1: "max-w-sm",
+            2: "max-w-2xl",
+            3: "max-w-4xl",
+            4: "max-w-6xl",
+          };
+          return (
+            <div
+              className={`grid grid-cols-1 ${tabletCols} ${desktopCols[count]} gap-6 mx-auto ${maxWidth[count]}`}
+            >
           {services.map((service, index) => {
             const IconComponent = iconMap[service.icon || "PenTool"] || PenTool;
             return (
