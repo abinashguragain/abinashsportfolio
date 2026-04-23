@@ -78,15 +78,9 @@ export const AboutSection = () => {
             4: "lg:grid-cols-4",
           };
           const tabletCols = count >= 2 ? "sm:grid-cols-2" : "sm:grid-cols-1";
-          const maxWidth: Record<number, string> = {
-            1: "max-w-sm",
-            2: "max-w-2xl",
-            3: "max-w-4xl",
-            4: "max-w-6xl",
-          };
           return (
             <div
-              className={`grid grid-cols-1 ${tabletCols} ${desktopCols[count]} gap-6 mx-auto ${maxWidth[count]}`}
+              className={`grid grid-cols-1 ${tabletCols} ${desktopCols[count]} gap-6 w-full`}
             >
           {services.map((service, index) => {
             const IconComponent = iconMap[service.icon || "PenTool"] || PenTool;
