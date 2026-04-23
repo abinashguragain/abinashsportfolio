@@ -69,13 +69,13 @@ export const AboutSection = () => {
           </p>
         </div>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="flex flex-wrap justify-center gap-6">
           {services.map((service, index) => {
             const IconComponent = iconMap[service.icon || "PenTool"] || PenTool;
             return (
               <div
                 key={service.id}
-                className="group p-6 bg-card rounded-xl border border-border card-hover"
+                className="group p-6 bg-card rounded-xl border border-border card-hover w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(25%-1.125rem)] lg:max-w-xs"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 transition-colors duration-300 overflow-hidden">
