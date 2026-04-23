@@ -69,13 +69,31 @@ export const AboutSection = () => {
           </p>
         </div>
         
-        <div className="flex flex-wrap justify-center gap-6">
+        {(() => {
+          const count = Math.min(services.length, 4);
+          const desktopCols: Record<number, string> = {
+            1: "lg:grid-cols-1",
+            2: "lg:grid-cols-2",
+            3: "lg:grid-cols-3",
+            4: "lg:grid-cols-4",
+          };
+          const tabletCols = count >= 2 ? "sm:grid-cols-2" : "sm:grid-cols-1";
+          const maxWidth: Record<number, string> = {
+            1: "max-w-sm",
+            2: "max-w-2xl",
+            3: "max-w-4xl",
+            4: "max-w-6xl",
+          };
+          return (
+            <div
+              className={`grid grid-cols-1 ${tabletCols} ${desktopCols[count]} gap-6 mx-auto ${maxWidth[count]}`}
+            >
           {services.map((service, index) => {
             const IconComponent = iconMap[service.icon || "PenTool"] || PenTool;
             return (
               <div
                 key={service.id}
-                className="group p-6 bg-card rounded-xl border border-border card-hover w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(25%-1.125rem)] lg:max-w-xs"
+                className="group p-6 bg-card rounded-xl border border-border card-hover w-full"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 transition-colors duration-300 overflow-hidden">
@@ -93,7 +111,9 @@ export const AboutSection = () => {
               </div>
             );
           })}
-        </div>
+            </div>
+          );
+        })()}
       </div>
     </section>
   );
