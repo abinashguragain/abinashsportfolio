@@ -61,6 +61,10 @@ const BlogEditor = () => {
   // Track the original published_at date to preserve it on updates
   const [originalPublishedAt, setOriginalPublishedAt] = useState<string | null>(null);
 
+  // Draft persistence key - survives navigation but cleared on refresh/save
+  const draftKey = `blog-editor-draft-${id || "new"}`;
+  const [draftRestored, setDraftRestored] = useState(false);
+
   const googleFonts = [
     "Inter", "Roboto", "Open Sans", "Lato", "Montserrat", "Poppins",
     "Playfair Display", "Merriweather", "Source Sans Pro", "Nunito",
@@ -72,8 +76,38 @@ const BlogEditor = () => {
     fetchCategories();
     if (!isNew && id) {
       fetchPost();
+    } else {
+      // For new posts, attempt draft restore immediately
+      restoreDraft();
     }
   }, [id, isNew]);
+
+  const restoreDraft = () => {
+    try {
+      const raw = sessionStorage.getItem(draftKey);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed.form) setForm(parsed.form);
+        if (parsed.selectedCategories) setSelectedCategories(parsed.selectedCategories);
+      }
+    } catch (e) {
+      console.warn("Failed to restore blog draft", e);
+    }
+    setDraftRestored(true);
+  };
+
+  // Persist form + selected categories to sessionStorage on any change
+  useEffect(() => {
+    if (!draftRestored) return;
+    try {
+      sessionStorage.setItem(
+        draftKey,
+        JSON.stringify({ form, selectedCategories })
+      );
+    } catch (e) {
+      console.warn("Failed to persist blog draft", e);
+    }
+  }, [form, selectedCategories, draftRestored, draftKey]);
 
   const fetchAuthors = async () => {
     const { data } = await supabase
@@ -139,6 +173,8 @@ const BlogEditor = () => {
       );
     }
     setLoading(false);
+    // After loading from DB, overlay any in-progress draft from this session
+    restoreDraft();
   };
 
   const generateSlug = (title: string) => {
@@ -244,6 +280,8 @@ const BlogEditor = () => {
     }
 
     setSaving(false);
+    // Successful save - clear the draft
+    try { sessionStorage.removeItem(draftKey); } catch {}
     toast({ title: "Saved!" });
     navigate("/admin/blog");
   };
