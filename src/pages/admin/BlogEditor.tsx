@@ -280,6 +280,8 @@ const BlogEditor = () => {
     }
 
     setSaving(false);
+    // Successful save - clear the draft
+    try { sessionStorage.removeItem(draftKey); } catch {}
     toast({ title: "Saved!" });
     navigate("/admin/blog");
   };
