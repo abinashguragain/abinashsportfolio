@@ -877,6 +877,45 @@ export type Database = {
         }
         Relationships: []
       }
+      tracking_snippets: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          is_active: boolean
+          is_global: boolean
+          name: string
+          page_paths: string[]
+          sort_order: number
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          is_global?: boolean
+          name: string
+          page_paths?: string[]
+          sort_order?: number
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          is_global?: boolean
+          name?: string
+          page_paths?: string[]
+          sort_order?: number
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
