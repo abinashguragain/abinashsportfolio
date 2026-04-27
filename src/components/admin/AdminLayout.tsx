@@ -26,6 +26,7 @@ import {
   Shield,
   Search,
   Globe,
+  Tag,
 } from "lucide-react";
 
 import { LucideIcon } from "lucide-react";
@@ -91,6 +92,7 @@ const AdminLayout = () => {
       items: [
         { href: "/admin/seo", label: "SEO Settings", icon: Globe },
         { href: "/admin/integrations", label: "Analytics", icon: BarChart3 },
+        { href: "/admin/tracking", label: "Tag Manager & Pixels", icon: Tag },
         { href: "/admin/activity-logs", label: "Activity Logs", icon: Shield },
       ],
     },

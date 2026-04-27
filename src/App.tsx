@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/admin/ProtectedRoute";
 import ThirdPartyScripts from "./components/ThirdPartyScripts";
+import TrackingSnippets from "./components/TrackingSnippets";
 import { DynamicFavicon } from "./components/DynamicFavicon";
 import Index from "./pages/Index";
 import Blog from "./pages/Blog";
@@ -34,6 +35,7 @@ import IntegrationsEditor from "./pages/admin/IntegrationsEditor";
 import GoogleSheetsEditor from "./pages/admin/GoogleSheetsEditor";
 import ActivityLogs from "./pages/admin/ActivityLogs";
 import SEOEditor from "./pages/admin/SEOEditor";
+import TrackingEditor from "./pages/admin/TrackingEditor";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +52,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <ThirdPartyScripts />
+          <TrackingSnippets />
           <DynamicFavicon />
           <Routes>
             <Route path="/" element={<Index />} />
@@ -80,6 +83,7 @@ const App = () => (
               <Route path="google-sheets" element={<GoogleSheetsEditor />} />
               <Route path="activity-logs" element={<ActivityLogs />} />
               <Route path="seo" element={<SEOEditor />} />
+              <Route path="tracking" element={<TrackingEditor />} />
             </Route>
             
             
