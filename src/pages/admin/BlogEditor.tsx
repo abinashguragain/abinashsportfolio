@@ -173,6 +173,8 @@ const BlogEditor = () => {
       );
     }
     setLoading(false);
+    // After loading from DB, overlay any in-progress draft from this session
+    restoreDraft();
   };
 
   const generateSlug = (title: string) => {
