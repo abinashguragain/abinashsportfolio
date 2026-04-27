@@ -76,8 +76,38 @@ const BlogEditor = () => {
     fetchCategories();
     if (!isNew && id) {
       fetchPost();
+    } else {
+      // For new posts, attempt draft restore immediately
+      restoreDraft();
     }
   }, [id, isNew]);
+
+  const restoreDraft = () => {
+    try {
+      const raw = sessionStorage.getItem(draftKey);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed.form) setForm(parsed.form);
+        if (parsed.selectedCategories) setSelectedCategories(parsed.selectedCategories);
+      }
+    } catch (e) {
+      console.warn("Failed to restore blog draft", e);
+    }
+    setDraftRestored(true);
+  };
+
+  // Persist form + selected categories to sessionStorage on any change
+  useEffect(() => {
+    if (!draftRestored) return;
+    try {
+      sessionStorage.setItem(
+        draftKey,
+        JSON.stringify({ form, selectedCategories })
+      );
+    } catch (e) {
+      console.warn("Failed to persist blog draft", e);
+    }
+  }, [form, selectedCategories, draftRestored, draftKey]);
 
   const fetchAuthors = async () => {
     const { data } = await supabase
