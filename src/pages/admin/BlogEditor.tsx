@@ -61,6 +61,10 @@ const BlogEditor = () => {
   // Track the original published_at date to preserve it on updates
   const [originalPublishedAt, setOriginalPublishedAt] = useState<string | null>(null);
 
+  // Draft persistence key - survives navigation but cleared on refresh/save
+  const draftKey = `blog-editor-draft-${id || "new"}`;
+  const [draftRestored, setDraftRestored] = useState(false);
+
   const googleFonts = [
     "Inter", "Roboto", "Open Sans", "Lato", "Montserrat", "Poppins",
     "Playfair Display", "Merriweather", "Source Sans Pro", "Nunito",
