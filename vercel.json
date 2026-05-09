@@ -4,6 +4,17 @@
       "source": "/sitemap.xml",
       "destination": "https://hzmljxtklixcisasjqwg.supabase.co/functions/v1/sitemap?baseUrl=https://abinashg.com.np"
     },
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(googlebot|bingbot|yandex|baiduspider|duckduckbot|slurp|facebookexternalhit|facebot|twitterbot|linkedinbot|whatsapp|telegrambot|slackbot|discordbot|pinterest|redditbot|applebot|embedly|quora link preview|skypeuripreview|nuzzel|bitlybot|rogerbot|showyoubot|outbrain|w3c_validator|tumblr|vkshare|w3c_css_validator|prerender).*"
+        }
+      ],
+      "destination": "https://hzmljxtklixcisasjqwg.supabase.co/functions/v1/prerender?path=/:path*"
+    },
     { "source": "/(.*)", "destination": "/" }
   ]
 }
