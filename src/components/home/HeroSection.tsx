@@ -56,12 +56,24 @@ export const HeroSection = () => {
   const badgeSubtitle = content?.badge_subtitle || "Writing Experience";
 
   return (
-    <section className="relative section-padding bg-gradient-hero overflow-hidden md:bg-cover md:bg-center md:bg-no-repeat" style={{ backgroundImage: `linear-gradient(to right, hsl(var(--background) / 0.85) 0%, hsl(var(--background) / 0.6) 45%, hsl(var(--background) / 0) 75%), url(${imageUrl})` } as React.CSSProperties}>
+    <section className="relative section-padding bg-gradient-hero overflow-hidden md:min-h-[80vh] md:flex md:items-center">
+      {/* Desktop/tablet background image */}
+      <div
+        className="hidden md:block absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: `url(${imageUrl})` }}
+        aria-hidden="true"
+      />
+      <div
+        className="hidden md:block absolute inset-0"
+        style={{ background: "linear-gradient(to right, hsl(var(--background) / 0.92) 0%, hsl(var(--background) / 0.7) 40%, hsl(var(--background) / 0) 70%)" }}
+        aria-hidden="true"
+      />
+
       {/* Decorative elements - mobile only */}
       <div className="md:hidden absolute top-20 left-10 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
       <div className="md:hidden absolute bottom-20 right-10 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
       
-      <div className="container-wide relative">
+      <div className="container-wide relative w-full">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Content */}
           <div className="order-2 md:order-1 space-y-6 md:space-y-8 text-center md:text-left">
