@@ -56,27 +56,15 @@ export const HeroSection = () => {
   const badgeSubtitle = content?.badge_subtitle || "Writing Experience";
 
   return (
-    <section className="relative section-padding bg-gradient-hero overflow-hidden md:min-h-[80vh] md:flex md:items-center">
-      {/* Desktop/tablet background image */}
-      <div
-        className="hidden md:block absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: `url(${imageUrl})` }}
-        aria-hidden="true"
-      />
-      <div
-        className="hidden md:block absolute inset-0"
-        style={{ background: "linear-gradient(to right, hsl(var(--background) / 0.92) 0%, hsl(var(--background) / 0.7) 40%, hsl(var(--background) / 0) 70%)" }}
-        aria-hidden="true"
-      />
-
-      {/* Decorative elements - mobile only */}
-      <div className="md:hidden absolute top-20 left-10 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
-      <div className="md:hidden absolute bottom-20 right-10 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
+    <section className="relative section-padding bg-gradient-hero overflow-hidden">
+      {/* Decorative elements */}
+      <div className="absolute top-20 left-10 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
+      <div className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
       
-      <div className="container-wide relative w-full">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16 items-center">
+      <div className="container-wide relative">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Content */}
-          <div className="order-2 md:order-1 space-y-6 md:space-y-8 text-center md:text-left">
+          <div className="order-2 lg:order-1 space-y-6 md:space-y-8 text-center lg:text-left">
             <div className="space-y-4">
               <p className="text-sm md:text-base font-semibold text-secondary uppercase tracking-wider animate-fade-up opacity-0" style={{ animationDelay: '100ms', animationFillMode: 'forwards' }}>
                 {subtitle}
@@ -113,17 +101,22 @@ export const HeroSection = () => {
             </div>
           </div>
           
-          {/* Avatar - mobile only (desktop/tablet uses background image) */}
-          <div className="md:hidden order-1 flex justify-center animate-fade-up opacity-0" style={{ animationDelay: '200ms', animationFillMode: 'forwards' }}>
+          {/* Avatar */}
+          <div className="order-1 lg:order-2 flex justify-center lg:justify-end animate-fade-up opacity-0" style={{ animationDelay: '200ms', animationFillMode: 'forwards' }}>
             <div className="relative">
+              {/* Glow effect */}
               <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-secondary/30 rounded-2xl blur-2xl transform scale-95" />
+              
+              {/* Image container */}
               <div className="relative bg-gradient-to-br from-primary/20 to-secondary/20 p-2 rounded-2xl">
                 <img
                   src={imageUrl}
                   alt="Content Writer - Professional Avatar"
-                  className="w-64 h-64 rounded-xl object-cover"
+                  className="w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 rounded-xl object-cover"
                 />
               </div>
+              
+              {/* Floating badge */}
               <div className="absolute -bottom-4 -right-4 bg-card shadow-card rounded-lg px-4 py-2 border border-border animate-float">
                 <p className="text-sm font-semibold text-foreground">{badgeTitle}</p>
                 <p className="text-xs text-muted-foreground">{badgeSubtitle}</p>
