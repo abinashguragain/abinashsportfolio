@@ -113,22 +113,17 @@ export const HeroSection = () => {
             </div>
           </div>
           
-          {/* Avatar */}
-          <div className="order-1 lg:order-2 flex justify-center lg:justify-end animate-fade-up opacity-0" style={{ animationDelay: '200ms', animationFillMode: 'forwards' }}>
+          {/* Avatar - mobile only (desktop/tablet uses background image) */}
+          <div className="md:hidden order-1 flex justify-center animate-fade-up opacity-0" style={{ animationDelay: '200ms', animationFillMode: 'forwards' }}>
             <div className="relative">
-              {/* Glow effect */}
               <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-secondary/30 rounded-2xl blur-2xl transform scale-95" />
-              
-              {/* Image container */}
               <div className="relative bg-gradient-to-br from-primary/20 to-secondary/20 p-2 rounded-2xl">
                 <img
                   src={imageUrl}
                   alt="Content Writer - Professional Avatar"
-                  className="w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 rounded-xl object-cover"
+                  className="w-64 h-64 rounded-xl object-cover"
                 />
               </div>
-              
-              {/* Floating badge */}
               <div className="absolute -bottom-4 -right-4 bg-card shadow-card rounded-lg px-4 py-2 border border-border animate-float">
                 <p className="text-sm font-semibold text-foreground">{badgeTitle}</p>
                 <p className="text-xs text-muted-foreground">{badgeSubtitle}</p>
