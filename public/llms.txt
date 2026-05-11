@@ -1,0 +1,16 @@
+# Abinash Ghimire
+
+> Personal portfolio and blog of Abinash Ghimire — program management, Google Sheets automation, and operations.
+
+## Site
+
+- [Home](https://abinashg.com.np/)
+- [Blog](https://abinashg.com.np/blog)
+- [Experience](https://abinashg.com.np/experience)
+- [Testimonials](https://abinashg.com.np/testimonials)
+- [Contact](https://abinashg.com.np/contact)
+
+## Machine-readable
+
+- [robots.txt](https://abinashg.com.np/robots.txt)
+- [sitemap.xml](https://abinashg.com.np/sitemap.xml)
