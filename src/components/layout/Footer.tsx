@@ -134,6 +134,14 @@ export const Footer = () => {
                   {link.label}
                 </Link>
               ))}
+              <a
+                href="/sitemap.xml"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-muted-foreground hover:text-primary transition-colors"
+              >
+                Sitemap
+              </a>
             </nav>
           </div>
 
